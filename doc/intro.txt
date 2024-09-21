@@ -1,6 +1,59 @@
+Without documentation, code is unusable,
+and bad documentation is about as bad as bad code.
+
 TODO
 - documentare il formato csv scelto (tab)
 - scrivere convertitore
 - scrivere interfaccia grafica del convertitore
 - spiegare come espandere il codice in caso venga aggiornato il formato dei dati
 - documentare come documentare la documentazione
+
+
+CONVERTITORE - TOOL GRAFICO
+- prende path del file
+- lancia il convertitore
+- mostra eventuali errori (tutti quelli trovati) e si ferma
+- altrimenti chiede dove salvare il file convertito
+- esegue la conversione
+
+INPUT - FORMATO FILE TSV
+- descrivere il formato
+- descrivere come formattare il file su excel o libreoffice
+
+CONVERTITORE - CORE
+
+OUTPUT - FORMATO FILE JSON
+- descritto dal modello in typescript
+
+MAKING CHANGES
+
+Manuals
+- man(1) - display manual pages
+- apropos, whatis(1) - search manual page databases
+- mdoc(7) - semantic markup language for formatting manual pages
+- mandoc_char(7) - mandoc special characters
+- roff(7) - roff language reference for mandoc
+- tbl(7) - tbl language reference for mandoc
+- mandoc(1) - format manual pages
+- mandoc.db(5) - manual page database
+- makewhatis(8) - index UNIX manuals
+Note:
+1 - General commands (tools and utilities).
+5 - File formats.
+7 - Miscellaneous information.
+8 - System maintenance and operation commands.
+- Use `mandoc -Tlint`
+
+Stile Python3
+- https://peps.python.org/pep-0008/
+- https://peps.python.org/pep-0020/
+- https://docs.python.org/3/library/__main__.html
+
+Librerie Python3
+- https://docs.python.org/3/library/csv.html
+- https://docs.python.org/3/library/json.html
+
+Qt5 on Python3
+- https://www.pythonguis.com/tutorials/creating-your-first-pyqt-window/
+
+
