@@ -20,6 +20,38 @@ INPUT - FORMATO FILE TSV
 - descrivere il formato
 - descrivere come formattare il file su excel o libreoffice
 
+    export interface Volume {
+      id: string;
+      title: string;
+      publisher: string;
+      published: string;
+      ISBN: string;
+      ISSN: string;
+      volumeLink: string;
+      coverLink: string;
+      articles: Articolo[];
+    }
+
+    export interface Author {
+      name: string;
+      surname?: string;
+      affiliation?: string;
+      ORCID?: string;
+    }
+
+    export interface Articolo {
+      id: string;
+      title: string;
+      authors: Author[];
+      pageRange: string;
+      doi: string;
+      pdfLink: string;
+      abstract?: string;
+      note?: string;
+      keywords?: string[];
+      pdfRevisedLink?: string;
+    }
+
 CONVERTITORE - CORE
 
 OUTPUT - FORMATO FILE JSON
@@ -55,5 +87,4 @@ Librerie Python3
 
 Qt5 on Python3
 - https://www.pythonguis.com/tutorials/creating-your-first-pyqt-window/
-
 
