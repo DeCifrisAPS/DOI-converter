@@ -1,0 +1,6 @@
+TODO
+- documentare il formato csv scelto (tab)
+- scrivere convertitore
+- scrivere interfaccia grafica del convertitore
+- spiegare come espandere il codice in caso venga aggiornato il formato dei dati
+- documentare come documentare la documentazione
