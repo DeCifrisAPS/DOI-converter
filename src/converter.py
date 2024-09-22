@@ -37,6 +37,8 @@ Overview of the process
 Maybe there will be configuration to sync typescript model with this converter
 """
 
+VOLUME_ROW = 2
+ARTICLE_START_ROW = 4
 VOLUME_DATA_LEN = 8
 AUTHOR_DATA_LEN = 4
 ARTICLE_DATA_LEN = 9
@@ -100,12 +102,14 @@ def parse_article_data(raw: list[str]):
     pdf_revised = pdf_revised.strip()
     if bool(pdf_revised):
         partial_article['pdfRevisedLink']
-    partial_article['authors'] = parse_authors_data(raw[9:])
+    partial_article['authors'] = parse_authors_data(raw[ARTICLE_DATA_LEN:])
     return partial_article
 
 def convert_data(raw: list[list[str]]):
-    partial_volume = parse_volume_data(raw[2])
-    partial_volume['articles'] = list(map(parse_article_data, raw[4:]))
+    partial_volume = parse_volume_data(raw[VOLUME_ROW])
+    partial_volume['articles'] = list(map(
+                                        parse_article_data,
+                                        raw[ARTICLE_START_ROW:]))
     return partial_volume
 
 
