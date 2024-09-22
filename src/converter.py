@@ -133,7 +133,10 @@ def main() -> int:
     raw_lines = read_raw_data(input_file)
     version = parse_version(raw_lines[0])
     if version != "10":
-        print(f"Unsupported version {version}. This program works with version 10 only.", file=sys.stderr)
+        print(f"Unsupported version {version}: "
+            + f"this program works with version 10 only.",
+            file=sys.stderr)
+        return 1
     # TODO: if another argument is passed, that is the output file and we do
     # not print to stdout
     print(json.dumps(convert_data(raw_lines), ensure_ascii=False, indent=2))
