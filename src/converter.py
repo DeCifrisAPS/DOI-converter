@@ -1,6 +1,31 @@
 #!/usr/bin/env python3
-import csv
 import sys
+
+import csv
+import json
+
+import re
+import codecs
+
+ESCAPE_SEQUENCE_RE = re.compile(r'''
+        ( \\U........      # 8-digit hex escapes
+        | \\u....          # 4-digit hex escapes
+        | \\x..            # 2-digit hex escapes
+        | \\[0-7]{1,3}     # Octal escapes
+        | \\N\{[^}]+\}     # Unicode characters by name
+        | \\[\\'"abfnrtv]  # Single-character escapes
+        )''', re.UNICODE | re.VERBOSE)
+
+def decode_escapes(s):
+    def decode_match(match):
+        try:
+            return codecs.decode(match.group(0), 'unicode-escape')
+        except UnicodeDecodeError:
+            # In case we matched the wrong thing after a double-backslash
+            return match.group(0)
+
+    return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
+
 
 """
 Overview of the process
@@ -12,12 +37,12 @@ Overview of the process
 Maybe there will be configuration to sync typescript model with this converter
 """
 
+VOLUME_DATA_LEN = 8
+AUTHOR_DATA_LEN = 4
+ARTICLE_DATA_LEN = 9
 
 def parse_version(raw: list[str]):
     return raw[1]
-
-
-VOLUME_DATA_LEN = 8
 
 def parse_volume_data(raw: list[str]):
     [_id, title,
@@ -35,9 +60,6 @@ def parse_volume_data(raw: list[str]):
       'coverLink': cover_link,
     }
 
-
-AUTHOR_DATA_LEN = 4
-
 def parse_authors_data(raw: list[str]):
     res = []
     while len(raw) > 0 and bool(raw[0].strip()):
@@ -54,9 +76,6 @@ def parse_authors_data(raw: list[str]):
         raw = raw[AUTHOR_DATA_LEN:]
     return res
 
-
-ARTICLE_DATA_LEN = 9
-
 def parse_article_data(raw: list[str]):
     [_id, title,
     page_range, doi,
@@ -64,7 +83,7 @@ def parse_article_data(raw: list[str]):
     abstract, note, keywords] = raw[:ARTICLE_DATA_LEN]
     partial_article = {
       'id': _id.strip(),
-      'title': title.strip(),
+      'title': decode_escapes(title.strip()),
       'pageRange': page_range.strip(),
       'doi': doi.strip(),
       'pdfLink': pdf_link.strip()
@@ -89,10 +108,16 @@ def convert_data(raw: list[list[str]]):
     partial_volume['articles'] = list(map(parse_article_data, raw[4:]))
     return partial_volume
 
+
 def read_raw_data(filename: str) -> list[list[str]]:
     """Read Tab-Separated Value file"""
     with open(filename, newline='') as tsvfile:
-        return list(x for x in csv.reader(tsvfile, delimiter='\t', quotechar='"'))
+        return list(x 
+            for x in 
+            csv.reader(
+                tsvfile,
+                delimiter='\t',
+                quotechar='"'))
 
 def write_json_data(filename: str, data: list[list[str]]) -> None:
     """Write JSON file for website"""
@@ -101,11 +126,17 @@ def write_json_data(filename: str, data: list[list[str]]) -> None:
 
 def main() -> int:
     """Do stuff"""
-    raw_lines = read_raw_data('../examples/vol3.csv')
-    print(parse_version(raw_lines[0]))
-    # print(parse_volume_data(raw_lines[2]))
-    # print(parse_article_data(raw_lines[4]))
-    print(convert_data(raw_lines))
+    if len(sys.argv) < 2 or len(sys.argv) > 2:
+        print(f"Usage: {sys.argv[0]} file_name.csv", file=sys.stderr)
+        return 1
+    input_file = sys.argv[1]
+    raw_lines = read_raw_data(input_file)
+    version = parse_version(raw_lines[0])
+    if version != "10":
+        print(f"Unsupported version {version}. This program works with version 10 only.", file=sys.stderr)
+    # TODO: if another argument is passed, that is the output file and we do
+    # not print to stdout
+    print(json.dumps(convert_data(raw_lines), ensure_ascii=False, indent=2))
     return 0
 
 if __name__ == '__main__':
