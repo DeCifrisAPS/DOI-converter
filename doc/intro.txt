@@ -2,9 +2,7 @@ Without documentation, code is unusable,
 and bad documentation is about as bad as bad code.
 
 TODO
-- documentare il formato csv scelto (tab)
-- sanificatore/checker con errori comprensibili
-- documentare utility
+- rinominare e documentare utility
 - scrivere interfaccia grafica del convertitore
   - schermata di selezione input file
   - schemrata di analisi con pulsanti "indietro", "ricarica", "avanti" (l'ultimo abilitato se e solo se file è nel formato giusto)

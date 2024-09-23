@@ -137,14 +137,17 @@ def sanity_check(raw_lines: list[list[str]]) -> bool:
     # Volume section
     if len(raw_lines[2]) != VOLUME_DATA_LEN:
         print(f"Volume section is incorrect."
-            + f" Expected {VOLUME_DATA_LEN} elements.", file=sys.stderr)
+            + f" Expected {VOLUME_DATA_LEN} elements."
+            + f" Found {len(raw_lines[2])} elements.",
+            file=sys.stderr)
         sane = False
     # Article section
     # for line_number in range(ARTICLE_START_ROW, len(raw_lines)):
     line_length = len(raw_lines[ARTICLE_START_ROW])
     if line_length < ARTICLE_DATA_LEN + AUTHOR_DATA_LEN:
         print(f"Article lines are incorrect."
-            + f" Expected {ARTICLE_DATA_LEN + AUTHOR_DATA_LEN} elements.",
+            + f" Expected {ARTICLE_DATA_LEN + AUTHOR_DATA_LEN} elements."
+            + f" Found {line_length} elements.",
             file=sys.stderr)
         sane = False
     elif (line_length - ARTICLE_DATA_LEN) % AUTHOR_DATA_LEN != 0:
@@ -153,7 +156,8 @@ def sanity_check(raw_lines: list[list[str]]) -> bool:
         expected_min = ARTICLE_DATA_LEN + AUTHOR_DATA_LEN * maybe_authors
         expected_max = ARTICLE_DATA_LEN + AUTHOR_DATA_LEN * (maybe_authors + 1)
         print(f"Article lines are incorrect."
-            + f" Expected {expected_max} or {expected_min} elements.",
+            + f" Expected {expected_max} or {expected_min} elements."
+            + f" Found {line_length} elements.",
             file=sys.stderr)
         sane = False
         # This check is noisy and applied to the whole document
