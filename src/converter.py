@@ -101,7 +101,7 @@ def parse_article_data(raw: list[str]):
         partial_article['keywords'] = keywords
     pdf_revised = pdf_revised.strip()
     if bool(pdf_revised):
-        partial_article['pdfRevisedLink']
+        partial_article['pdfRevisedLink'] = pdf_revised
     partial_article['authors'] = parse_authors_data(raw[ARTICLE_DATA_LEN:])
     return partial_article
 
@@ -112,38 +112,78 @@ def convert_data(raw: list[list[str]]):
                                         raw[ARTICLE_START_ROW:]))
     return partial_volume
 
+def count_first_non_empty(line: [str], after: int = 0) -> int:
+    c = after
+    while c < len(line) and bool(line[c]):
+        c += 1
+    return c
 
-def read_raw_data(filename: str) -> list[list[str]]:
-    """Read Tab-Separated Value file"""
-    with open(filename, newline='') as tsvfile:
-        return list(x 
-            for x in 
-            csv.reader(
-                tsvfile,
-                delimiter='\t',
-                quotechar='"'))
-
-def write_json_data(filename: str, data: list[list[str]]) -> None:
-    """Write JSON file for website"""
-    with open(filename, 'w', encoding='utf-8') as jsonfile:
-        json.dump(data, jsonfile, ensure_ascii=False) # , indent=4)
-
-def main() -> int:
-    """Do stuff"""
-    if len(sys.argv) < 2 or len(sys.argv) > 2:
-        print(f"Usage: {sys.argv[0]} file_name.csv", file=sys.stderr)
-        return 1
-    input_file = sys.argv[1]
-    raw_lines = read_raw_data(input_file)
+def sanity_check(raw_lines: list[list[str]]) -> bool:
+    if len(raw_lines) < 5:
+        print(f"File contains less than five rows", file=sys.stderr)
+        return False
+    # Check version
+    if len(raw_lines[0]) < 2:
+        print(f"First line does not contain the version column.",
+        file=sys.stderr)
+        return False
     version = parse_version(raw_lines[0])
     if version != "10":
         print(f"Unsupported version {version}: "
             + f"this program works with version 10 only.",
             file=sys.stderr)
+        return False
+    sane = True
+    # Volume section
+    if len(raw_lines[2]) != VOLUME_DATA_LEN:
+        print(f"Volume section is incorrect."
+            + f" Expected {VOLUME_DATA_LEN} elements.", file=sys.stderr)
+        sane = False
+    # Article section
+    # for line_number in range(ARTICLE_START_ROW, len(raw_lines)):
+    line_length = len(raw_lines[ARTICLE_START_ROW])
+    if line_length < ARTICLE_DATA_LEN + AUTHOR_DATA_LEN:
+        print(f"Article lines are incorrect."
+            + f" Expected {ARTICLE_DATA_LEN + AUTHOR_DATA_LEN} elements.",
+            file=sys.stderr)
+        sane = False
+    elif (line_length - ARTICLE_DATA_LEN) % AUTHOR_DATA_LEN != 0:
+        maybe_authors = max(1,
+                        (line_length - ARTICLE_DATA_LEN) // AUTHOR_DATA_LEN)
+        expected_min = ARTICLE_DATA_LEN + AUTHOR_DATA_LEN * maybe_authors
+        expected_max = ARTICLE_DATA_LEN + AUTHOR_DATA_LEN * (maybe_authors + 1)
+        print(f"Article lines are incorrect."
+            + f" Expected {expected_max} or {expected_min} elements.",
+            file=sys.stderr)
+        sane = False
+        # This check is noisy and applied to the whole document
+        # break
+    return sane
+
+def read_raw_data(filename: str) -> list[list[str]]:
+    """Read Tab-Separated Value file"""
+    with open(filename, newline='') as tsvfile:
+        return list(x for x in 
+            csv.reader(tsvfile, delimiter='\t', quotechar='"'))
+
+def main() -> int:
+    """Do stuff"""
+    if len(sys.argv) < 2 or len(sys.argv) > 3:
+        print(f"Usage: {sys.argv[0]} file_name.csv", file=sys.stderr)
         return 1
-    # TODO: if another argument is passed, that is the output file and we do
-    # not print to stdout
-    print(json.dumps(convert_data(raw_lines), ensure_ascii=False, indent=2))
+    input_file = sys.argv[1]
+    raw_lines = read_raw_data(input_file)
+    if not sanity_check(raw_lines):
+        return 1
+    if len(sys.argv) == 2:
+        print(f"File OK", file=sys.stderr)
+        return 0
+    output_file = sys.argv[2]
+    converted = convert_data(raw_lines)
+    if output_file == "-":
+        print(json.dumps(converted, ensure_ascii=False, indent=2))
+    else:
+        json.dump(converted, output_file, ensure_ascii=False)
     return 0
 
 if __name__ == '__main__':

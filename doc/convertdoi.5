@@ -1,0 +1,78 @@
+.Dd September 21, 2023
+.Dt CONVERTDOI 5
+.Os
+.Sh NAME
+.Nm convertdoi
+.Nd input file format
+.Sh DESCRIPTION
+The file format for
+.Nm
+is structured in three different sections.
+.Ss VERSION SECTION
+The first section consists of one line with two columns.
+The first element is a comment for the VERSION.
+The second element is the VERSION.
+.Ss VOLUME SECTION
+The second section cosists of two lines to describe the VOLUME.
+The first line is discarded as hint for the user
+.Pp
+The second line contains the following information of the VOLUME:
+.Bl -enum -compact
+.It
+ID of the VOLUME for the URL on the website;
+.It
+title of the Volume;
+.It
+ISBN of the volume;
+.It
+ISSN of the volume;
+.It
+published of the volume;
+.It
+date of publishing of the volume;
+.It
+link to PDF version of the Volume;
+.It
+link to PDF cover.
+.El
+.Ss ARTICLES SECTION
+The last section takes the rest of the document to describe the ARTICLES.
+The first line is discarded as hint for the user.
+.Pp
+Each following line contains the following information of the ARTICLE:
+.Bl -enum -compact
+.It
+ID of the ARTICLE for the URL on the website;
+.It
+title of the volume (in case of new line, insert "\n");
+.It
+page range;
+.It
+document Object Identifier (DOI);
+.It
+link to ARTICLE original PDF;
+.It
+link to ARTICLE revised PDF;
+.It
+abstract;
+.It
+note;
+.It
+keywords.
+.El
+.Pp
+After these, each AUTHOR has 4 columns as follow:
+.Bl -enum -compact
+.It
+name;
+.It
+surname;
+.It
+affiliation;
+.It
+ORCID.
+.El
+.Pp
+In other words, an article with N authors will have 9 + (N*4) columns, and so does the whole document.
+.Sh NOTES
+Non compliance with this format should be considered an error.
