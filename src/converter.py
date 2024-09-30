@@ -27,142 +27,126 @@ def decode_escapes(s):
     return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
 
 
-"""
-Overview of the process
-1. Read TSV
-2. Sanity Check
-2a. Error Handling
-3. Compile to JSON format
-
-Maybe there will be configuration to sync typescript model with this converter
-"""
-
 VOLUME_ROW = 2
 ARTICLE_START_ROW = 4
 VOLUME_DATA_LEN = 8
 AUTHOR_DATA_LEN = 4
 ARTICLE_DATA_LEN = 9
 
-def parse_version(raw: list[str]):
-    return raw[1]
+class ParserV10():
+    def __parse_version(self, raw: list[str]):
+        return raw[1]
 
-def parse_volume_data(raw: list[str]):
-    [_id, title,
-     isbn, issn,
-     publisher, published,
-     pdf_link, cover_link] = raw[:VOLUME_DATA_LEN]
-    return {
-      'id': _id,
-      'title': title,
-      'publisher': publisher,
-      'published': published,
-      'ISBN': isbn,
-      'ISSN': issn,
-      'volumeLink': pdf_link,
-      'coverLink': cover_link,
-    }
+    def __parse_volume_data(self, raw: list[str]):
+        [_id, title,
+        isbn, issn,
+        publisher, published,
+        pdf_link, cover_link] = raw[:VOLUME_DATA_LEN]
+        return {
+        'id': _id,
+        'title': title,
+        'publisher': publisher,
+        'published': published,
+        'ISBN': isbn,
+        'ISSN': issn,
+        'volumeLink': pdf_link,
+        'coverLink': cover_link,
+        }
 
-def parse_authors_data(raw: list[str]):
-    res = []
-    while len(raw) > 0 and bool(raw[0].strip()):
-        [name, surname, affiliation, orcid] = raw[:AUTHOR_DATA_LEN]
-        author = { 'name': name.strip(),
-                   'surname': surname.strip() }
-        affiliation = affiliation.strip()
-        if bool(affiliation):
-            author['affiliation'] = affiliation
-        orcid = orcid.strip()
-        if bool(orcid):
-            author['ORCID'] = orcid
-        res.append(author)
-        raw = raw[AUTHOR_DATA_LEN:]
-    return res
+    def __parse_authors_data(self, raw: list[str]):
+        res = []
+        while len(raw) > 0 and bool(raw[0].strip()):
+            [name, surname, affiliation, orcid] = raw[:AUTHOR_DATA_LEN]
+            author = { 'name': name.strip(),
+                    'surname': surname.strip() }
+            affiliation = affiliation.strip()
+            if bool(affiliation):
+                author['affiliation'] = affiliation
+            orcid = orcid.strip()
+            if bool(orcid):
+                author['ORCID'] = orcid
+            res.append(author)
+            raw = raw[AUTHOR_DATA_LEN:]
+        return res
 
-def parse_article_data(raw: list[str]):
-    [_id, title,
-    page_range, doi,
-    pdf_link, pdf_revised,
-    abstract, note, keywords] = raw[:ARTICLE_DATA_LEN]
-    partial_article = {
-      'id': _id.strip(),
-      'title': decode_escapes(title.strip()),
-      'pageRange': page_range.strip(),
-      'doi': doi.strip(),
-      'pdfLink': pdf_link.strip()
-    }
-    abstract = abstract.strip()
-    if bool(abstract):
-        partial_article['abstract'] = abstract
-    note = note.strip()
-    if bool(note):
-        partial_article['note'] = note
-    keywords = keywords.strip()
-    if bool(keywords):
-        partial_article['keywords'] = keywords
-    pdf_revised = pdf_revised.strip()
-    if bool(pdf_revised):
-        partial_article['pdfRevisedLink'] = pdf_revised
-    partial_article['authors'] = parse_authors_data(raw[ARTICLE_DATA_LEN:])
-    return partial_article
+    def __parse_article_data(self, raw: list[str]):
+        [_id, title,
+        page_range, doi,
+        pdf_link, pdf_revised,
+        abstract, note, keywords] = raw[:ARTICLE_DATA_LEN]
+        partial_article = {
+        'id': _id.strip(),
+        'title': decode_escapes(title.strip()),
+        'pageRange': page_range.strip(),
+        'doi': doi.strip(),
+        'pdfLink': pdf_link.strip()
+        }
+        abstract = abstract.strip()
+        if bool(abstract):
+            partial_article['abstract'] = abstract
+        note = note.strip()
+        if bool(note):
+            partial_article['note'] = note
+        keywords = keywords.strip()
+        if bool(keywords):
+            partial_article['keywords'] = keywords
+        pdf_revised = pdf_revised.strip()
+        if bool(pdf_revised):
+            partial_article['pdfRevisedLink'] = pdf_revised
+        partial_article['authors'] = self.__parse_authors_data(raw[ARTICLE_DATA_LEN:])
+        return partial_article
 
-def convert_data(raw: list[list[str]]):
-    partial_volume = parse_volume_data(raw[VOLUME_ROW])
-    partial_volume['articles'] = list(map(
-                                        parse_article_data,
-                                        raw[ARTICLE_START_ROW:]))
-    return partial_volume
+    def convert_data(self, raw: list[list[str]]):
+        partial_volume = self.__parse_volume_data(raw[VOLUME_ROW])
+        partial_volume['articles'] = list(map(
+                                            self.__parse_article_data,
+                                            raw[ARTICLE_START_ROW:]))
+        return partial_volume
 
-def count_first_non_empty(line: [str], after: int = 0) -> int:
-    c = after
-    while c < len(line) and bool(line[c]):
-        c += 1
-    return c
+    def __count_first_non_empty(line: [str], after: int = 0) -> int:
+        c = after
+        while c < len(line) and bool(line[c]):
+            c += 1
+        return c
 
-def sanity_check(raw_lines: list[list[str]]) -> bool:
-    if len(raw_lines) < 5:
-        print(f"File contains less than five rows", file=sys.stderr)
-        return False
-    # Check version
-    if len(raw_lines[0]) < 2:
-        print(f"First line does not contain the version column.",
-        file=sys.stderr)
-        return False
-    version = parse_version(raw_lines[0])
-    if version != "10":
-        print(f"Unsupported version {version}: "
-            + f"this program works with version 10 only.",
-            file=sys.stderr)
-        return False
-    sane = True
-    # Volume section
-    if len(raw_lines[2]) != VOLUME_DATA_LEN:
-        print(f"Volume section is incorrect."
-            + f" Expected {VOLUME_DATA_LEN} elements."
-            + f" Found {len(raw_lines[2])} elements.",
-            file=sys.stderr)
-        sane = False
-    # Article section
-    # for line_number in range(ARTICLE_START_ROW, len(raw_lines)):
-    line_length = len(raw_lines[ARTICLE_START_ROW])
-    if line_length < ARTICLE_DATA_LEN + AUTHOR_DATA_LEN:
-        print(f"Article lines are incorrect."
-            + f" Expected {ARTICLE_DATA_LEN + AUTHOR_DATA_LEN} elements."
-            + f" Found {line_length} elements.",
-            file=sys.stderr)
-        sane = False
-    elif (line_length - ARTICLE_DATA_LEN) % AUTHOR_DATA_LEN != 0:
-        maybe_authors = max(1,
-                        (line_length - ARTICLE_DATA_LEN) // AUTHOR_DATA_LEN)
-        expected_min = ARTICLE_DATA_LEN + AUTHOR_DATA_LEN * maybe_authors
-        expected_max = ARTICLE_DATA_LEN + AUTHOR_DATA_LEN * (maybe_authors + 1)
-        print(f"Article lines are incorrect."
-            + f" Expected {expected_max} or {expected_min} elements."
-            + f" Found {line_length} elements.",
-            file=sys.stderr)
-        sane = False
-        # This check is noisy and applied to the whole document
-        # break
-    return sane
+    def sanity_check(self, raw_lines: list[list[str]]) -> bool:
+        if len(raw_lines) < 5:
+            return False, ["File contains less than five rows"]
+        # Check version
+        if len(raw_lines[0]) < 2:
+            return False, ["First line does not contain the version column."]
+        version = self.__parse_version(raw_lines[0])
+        if version != "10":
+            return False, [f"Unsupported version {version}: "
+                + f"this program works with version 10 only."]
+        sane = True
+        error_messages = []
+        # Volume section
+        if len(raw_lines[2]) != VOLUME_DATA_LEN:
+            sane = False
+            error_messages.append(f"Volume section is incorrect."
+                + f" Expected {VOLUME_DATA_LEN} elements."
+                + f" Found {len(raw_lines[2])} elements.")
+        # Article section
+        # for line_number in range(ARTICLE_START_ROW, len(raw_lines)):
+        line_length = len(raw_lines[ARTICLE_START_ROW])
+        if line_length < ARTICLE_DATA_LEN + AUTHOR_DATA_LEN:
+            error_messages.append(f"Article lines are incorrect."
+                + f" Expected {ARTICLE_DATA_LEN + AUTHOR_DATA_LEN} elements."
+                + f" Found {line_length} elements.")
+            sane = False
+        elif (line_length - ARTICLE_DATA_LEN) % AUTHOR_DATA_LEN != 0:
+            maybe_authors = max(1,
+                            (line_length - ARTICLE_DATA_LEN) // AUTHOR_DATA_LEN)
+            expected_min = ARTICLE_DATA_LEN + AUTHOR_DATA_LEN * maybe_authors
+            expected_max = ARTICLE_DATA_LEN + AUTHOR_DATA_LEN * (maybe_authors + 1)
+            error_messages.append(f"Article lines are incorrect."
+                + f" Expected {expected_max} or {expected_min} elements."
+                + f" Found {line_length} elements.")
+            sane = False
+            # This check is noisy and applied to the whole document
+            # break
+        return sane, error_messages
 
 def read_raw_data(filename: str) -> list[list[str]]:
     """Read Tab-Separated Value file"""
@@ -171,23 +155,40 @@ def read_raw_data(filename: str) -> list[list[str]]:
             csv.reader(tsvfile, delimiter='\t', quotechar='"'))
 
 def main() -> int:
-    """Do stuff"""
+    """
+    Overview of the process
+        1. Read TSV
+        2. Sanity Check
+        2a. Error Handling
+        3. Compile to JSON format
+    Maybe there will be configuration to sync typescript model with this converter
+    """
     if len(sys.argv) < 2 or len(sys.argv) > 3:
         print(f"Usage: {sys.argv[0]} file_name.csv", file=sys.stderr)
         return 1
     input_file = sys.argv[1]
     raw_lines = read_raw_data(input_file)
-    if not sanity_check(raw_lines):
+    parser = None
+    if len(raw_lines) > 0 and len(raw_lines[0]) >= 2 and raw_lines[0][1] == "10":
+        parser = ParserV10()
+    else:
+        print(f"Unsupported version: this program works with version 10 only.",
+                file=sys.stderr)
+        return 1
+    ok, error_messages = parser.sanity_check(raw_lines)
+    if not ok:
+        print('\n'.join(error_messages), file=sys.stderr)
         return 1
     if len(sys.argv) == 2:
         print(f"File OK", file=sys.stderr)
         return 0
     output_file = sys.argv[2]
-    converted = convert_data(raw_lines)
+    converted = parser.convert_data(raw_lines)
     if output_file == "-":
         print(json.dumps(converted, ensure_ascii=False, indent=2))
     else:
-        json.dump(converted, output_file, ensure_ascii=False)
+        with open(output_file, "w") as ofile:
+            json.dump(converted, ofile, ensure_ascii=False)
     return 0
 
 if __name__ == '__main__':
