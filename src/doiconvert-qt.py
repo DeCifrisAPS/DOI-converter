@@ -23,12 +23,8 @@ class ConverterWizard(QWizard):
         self.addPage(OutputPage(self))
         self.addPage(FinishPage(self))
 
-        # self.setPixmap(QWizard.BackgroundPixmap, # MacStyle
-        #         QPixmap("./decifris_background.jpeg"))
-        # self.setPixmap(QWizard.WatermarkPixmap, # Classic or Modern
-        #         QPixmap("./decifris_background.jpeg"))
-        # self.setPixmap(QWizard.BannerPixmap, # Classic or Modern
-        #         QPixmap("./logo.png"))
+        self.setPixmap(QWizard.LogoPixmap, # Classic or Modern
+                QPixmap("./decifris_logo.jpg"))
         self.setWizardStyle(QWizard.ModernStyle)
         # ClassicStyle ModernStyle MacStyle AeroStyle
 
@@ -38,16 +34,16 @@ class ConverterWizard(QWizard):
 class InputPage(QWizardPage):
     def __init__(self, parent=None):
         super(InputPage, self).__init__(parent)
-        self.setTitle("Hello there")
-        self.setPixmap(QWizard.LogoPixmap, # Classic or Modern
-                QPixmap("./logo.png"))
+        self.setTitle("Convertitore da CSV in JSON")
+        self.setSubTitle(f"Versione {version}")
         self.label1 = QLabel()
         layout = QVBoxLayout()
         layout.addWidget(self.label1)
         self.setLayout(layout)
 
     def initializePage(self):
-        self.label1.setText("Hello there")
+        self.label1.setText("Questo programma serve per convertire...")
+        self.label1.setWordWrap(True)
 
 class ValidationPage(QWizardPage):
     pathChanged = QtCore.pyqtSignal()
@@ -56,7 +52,8 @@ class ValidationPage(QWizardPage):
         super(ValidationPage, self).__init__(parent)
         self.chosen_path = None
         self.pathChanged.connect(self.completeChanged)
-        self.label1 = QLabel()
+        self.setTitle("Selezionare file da convertire")
+        self.setSubTitle("Verrà anche validato il file prima di continuare")
         self.file_label = QLabel()
         self.selectFileButton = QPushButton("Browse")
         # self.selectFileButton.setIcon(QIcon("./logo.png"))
@@ -64,15 +61,13 @@ class ValidationPage(QWizardPage):
         self.message_label = QLabel()
         self.message_label.setWordWrap(True)
         gl = QGridLayout()
-        gl.setRowStretch(2, 1)
-        gl.addWidget(self.label1, 0, 0, 1, 2)
-        gl.addWidget(self.file_label, 1, 0)
-        gl.addWidget(self.selectFileButton, 1, 1)
-        gl.addWidget(self.message_label, 3, 0, 1, 2)
+        gl.setRowStretch(1, 1)
+        gl.addWidget(self.file_label, 0, 0)
+        gl.addWidget(self.selectFileButton, 0, 1)
+        gl.addWidget(self.message_label, 2, 0, 1, 2)
         self.setLayout(gl)
 
     def initializePage(self):
-        self.label1.setText("Select input file")
         self.file_label.setText("Select a file")
 
     def chooseFile(self):
@@ -106,18 +101,17 @@ class OutputPage(QWizardPage):
         super(OutputPage, self).__init__(parent)
         self.chosen_path = None
         self.pathChanged.connect(self.completeChanged)
-        self.label1 = QLabel()
+        self.setTitle("Selezionare file da generare")
+        self.setSubTitle("Verrà creato o sovrascritto")
         self.file_label = QLabel()
         self.selectFileButton = QPushButton("Browse")
         self.selectFileButton.clicked.connect(self.chooseFile)
         gl = QGridLayout()
-        gl.addWidget(self.label1, 0, 0, 1, 2)
-        gl.addWidget(self.file_label, 1, 0)
-        gl.addWidget(self.selectFileButton, 1, 1)
+        gl.addWidget(self.file_label, 0, 0)
+        gl.addWidget(self.selectFileButton, 0, 1)
         self.setLayout(gl)
 
     def initializePage(self):
-        self.label1.setText("Select output")
         self.file_label.setText("Select a file")
 
     def chooseFile(self):
@@ -154,13 +148,10 @@ class OutputPage(QWizardPage):
 class FinishPage(QWizardPage):
     def __init__(self, parent=None):
         super(FinishPage, self).__init__(parent)
-        self.label1 = QLabel()
+        self.setTitle("Operazione completata")
+        self.setSubTitle("Il file è stato convertito con successo")
         layout = QVBoxLayout()
-        layout.addWidget(self.label1)
         self.setLayout(layout)
-
-    def initializePage(self):
-        self.label1.setText("Conclusion")
 
 
 if __name__ == '__main__':
