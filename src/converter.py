@@ -122,7 +122,7 @@ class ParserV10():
         sane = True
         error_messages = []
         # Volume section
-        if len(raw_lines[2]) != VOLUME_DATA_LEN:
+        if len(raw_lines[2]) < VOLUME_DATA_LEN:
             sane = False
             error_messages.append(f"Volume section is incorrect."
                 + f" Expected {VOLUME_DATA_LEN} elements."
@@ -150,7 +150,7 @@ class ParserV10():
 
 def read_raw_data(filename: str) -> list[list[str]]:
     """Read Tab-Separated Value file"""
-    with open(filename, newline='') as tsvfile:
+    with open(filename, newline='', encoding='utf-8') as tsvfile:
         return list(x for x in 
             csv.reader(tsvfile, delimiter='\t', quotechar='"'))
 
@@ -187,7 +187,7 @@ def main() -> int:
     if output_file == "-":
         print(json.dumps(converted, ensure_ascii=False, indent=2))
     else:
-        with open(output_file, "w") as ofile:
+        with open(output_file, "w", encoding='utf-8') as ofile:
             json.dump(converted, ofile, ensure_ascii=False)
     return 0
 

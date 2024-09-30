@@ -2,47 +2,68 @@
 import os
 import sys
 import json
-from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QWizard, QWizardPage
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QPushButton, QGridLayout
+from PyQt5.QtWidgets import QFileDialog, QApplication
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5 import QtCore
 
 from converter import ParserV10, read_raw_data
 
+version = "10"
+
 global_parser = ParserV10()
 
-class ConverterWizard(QtWidgets.QWizard):
+class ConverterWizard(QWizard):
     def __init__(self, parent=None):
         super(ConverterWizard, self).__init__(parent)
+        self.setOption(QWizard.DisabledBackButtonOnLastPage)
         self.addPage(InputPage(self))
         self.addPage(ValidationPage(self))
         self.addPage(OutputPage(self))
         self.addPage(FinishPage(self))
-        self.setWindowTitle("PyQt5 Wizard")
+
+        # self.setPixmap(QWizard.BackgroundPixmap, # MacStyle
+        #         QPixmap("./decifris_background.jpeg"))
+        # self.setPixmap(QWizard.WatermarkPixmap, # Classic or Modern
+        #         QPixmap("./decifris_background.jpeg"))
+        # self.setPixmap(QWizard.BannerPixmap, # Classic or Modern
+        #         QPixmap("./logo.png"))
+        self.setWizardStyle(QWizard.ModernStyle)
+        # ClassicStyle ModernStyle MacStyle AeroStyle
+
+        self.setWindowTitle(f"DOI Converter {version}")
         self.resize(640, 480)
 
-class InputPage(QtWidgets.QWizardPage):
+class InputPage(QWizardPage):
     def __init__(self, parent=None):
         super(InputPage, self).__init__(parent)
-        self.label1 = QtWidgets.QLabel()
-        layout = QtWidgets.QVBoxLayout()
+        self.setTitle("Hello there")
+        self.setPixmap(QWizard.LogoPixmap, # Classic or Modern
+                QPixmap("./logo.png"))
+        self.label1 = QLabel()
+        layout = QVBoxLayout()
         layout.addWidget(self.label1)
         self.setLayout(layout)
 
     def initializePage(self):
         self.label1.setText("Hello there")
 
-class ValidationPage(QtWidgets.QWizardPage):
+class ValidationPage(QWizardPage):
     pathChanged = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(ValidationPage, self).__init__(parent)
         self.chosen_path = None
         self.pathChanged.connect(self.completeChanged)
-        self.label1 = QtWidgets.QLabel()
-        self.file_label = QtWidgets.QLabel()
-        self.selectFileButton = QtWidgets.QPushButton("Browse")
+        self.label1 = QLabel()
+        self.file_label = QLabel()
+        self.selectFileButton = QPushButton("Browse")
+        # self.selectFileButton.setIcon(QIcon("./logo.png"))
         self.selectFileButton.clicked.connect(self.chooseFile)
-        self.message_label = QtWidgets.QLabel()
-        gl = QtWidgets.QGridLayout()
+        self.message_label = QLabel()
+        self.message_label.setWordWrap(True)
+        gl = QGridLayout()
         gl.setRowStretch(2, 1)
         gl.addWidget(self.label1, 0, 0, 1, 2)
         gl.addWidget(self.file_label, 1, 0)
@@ -55,7 +76,7 @@ class ValidationPage(QtWidgets.QWizardPage):
         self.file_label.setText("Select a file")
 
     def chooseFile(self):
-        path = QtWidgets.QFileDialog.getOpenFileName(self,
+        path = QFileDialog.getOpenFileName(self,
             "Open File", "./", "CSV Files (*.csv)")
         self.chosen_path = path[0]
         self.wizard().input_file = self.chosen_path
@@ -78,18 +99,18 @@ class ValidationPage(QtWidgets.QWizardPage):
             and self.check_file())
 
 
-class OutputPage(QtWidgets.QWizardPage):
+class OutputPage(QWizardPage):
     pathChanged = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(OutputPage, self).__init__(parent)
         self.chosen_path = None
         self.pathChanged.connect(self.completeChanged)
-        self.label1 = QtWidgets.QLabel()
-        self.file_label = QtWidgets.QLabel()
-        self.selectFileButton = QtWidgets.QPushButton("Browse")
+        self.label1 = QLabel()
+        self.file_label = QLabel()
+        self.selectFileButton = QPushButton("Browse")
         self.selectFileButton.clicked.connect(self.chooseFile)
-        gl = QtWidgets.QGridLayout()
+        gl = QGridLayout()
         gl.addWidget(self.label1, 0, 0, 1, 2)
         gl.addWidget(self.file_label, 1, 0)
         gl.addWidget(self.selectFileButton, 1, 1)
@@ -100,7 +121,7 @@ class OutputPage(QtWidgets.QWizardPage):
         self.file_label.setText("Select a file")
 
     def chooseFile(self):
-        path = QtWidgets.QFileDialog.getSaveFileName(self,
+        path = QFileDialog.getSaveFileName(self,
             "Select destination", "./", "JSON Files (*.json)")
         self.chosen_path = path[0]
         if len(self.chosen_path.split('.json')) == 1:
@@ -130,11 +151,11 @@ class OutputPage(QtWidgets.QWizardPage):
             return True
         return False
 
-class FinishPage(QtWidgets.QWizardPage):
+class FinishPage(QWizardPage):
     def __init__(self, parent=None):
         super(FinishPage, self).__init__(parent)
-        self.label1 = QtWidgets.QLabel()
-        layout = QtWidgets.QVBoxLayout()
+        self.label1 = QLabel()
+        layout = QVBoxLayout()
         layout.addWidget(self.label1)
         self.setLayout(layout)
 
@@ -143,8 +164,9 @@ class FinishPage(QtWidgets.QWizardPage):
 
 
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     wiz = ConverterWizard()
     wiz.show()
+    wiz.setWindowIcon(QIcon("./logo.png"))
     sys.exit(app.exec())
 
