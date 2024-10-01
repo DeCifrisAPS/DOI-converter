@@ -31,7 +31,7 @@ VOLUME_ROW = 2
 ARTICLE_START_ROW = 4
 VOLUME_DATA_LEN = 8
 AUTHOR_DATA_LEN = 4
-ARTICLE_DATA_LEN = 9
+ARTICLE_DATA_LEN = 10
 
 class ParserV10():
     def __parse_version(self, raw: list[str]):
@@ -73,7 +73,7 @@ class ParserV10():
         [_id, title,
         page_range, doi,
         pdf_link, pdf_revised,
-        abstract, note, keywords] = raw[:ARTICLE_DATA_LEN]
+        abstract, note, keywords, bib_notes] = raw[:ARTICLE_DATA_LEN]
         partial_article = {
         'id': _id.strip(),
         'title': decode_escapes(title.strip()),
@@ -93,6 +93,8 @@ class ParserV10():
         pdf_revised = pdf_revised.strip()
         if bool(pdf_revised):
             partial_article['pdfRevisedLink'] = pdf_revised
+        if bool(bib_notes):
+            partial_article['bibNotes'] = bib_notes
         partial_article['authors'] = self.__parse_authors_data(raw[ARTICLE_DATA_LEN:])
         return partial_article
 

@@ -3,14 +3,10 @@ and bad documentation is about as bad as bad code.
 
 TODO
 - rinominare e documentare utility
-- scrivere interfaccia grafica del convertitore
-  - schermata di selezione input file
-  - schemrata di analisi con pulsanti "indietro", "ricarica", "avanti" (l'ultimo abilitato se e solo se file è nel formato giusto)
-  - schemrata di selezione output file
-  - schermata di operazione completata (se non ci sono errori di permessi -- ma questi li posso controllare nella schermata preceente)
 - spiegare come espandere il codice in caso venga aggiornato il formato dei dati
   - una nuova versione deve essere retrocompatibile
   - se non lo fosse, specificare che le versioni precedenti devono essere aggiornate col nuovo formato
+- spiegare come impacchettare su Windows l'EXE
 - documentare come documentare la documentazione
 - bulk convert?
 
@@ -56,6 +52,7 @@ INPUT - FORMATO FILE TSV
       note?: string;
       keywords?: string[];
       pdfRevisedLink?: string;
+      bibNotes?: string;
     }
 
 CONVERTITORE - CORE
