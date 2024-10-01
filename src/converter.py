@@ -29,7 +29,7 @@ def decode_escapes(s):
 
 VOLUME_ROW = 2
 ARTICLE_START_ROW = 4
-VOLUME_DATA_LEN = 8
+VOLUME_DATA_LEN = 9
 AUTHOR_DATA_LEN = 4
 ARTICLE_DATA_LEN = 10
 
@@ -38,7 +38,7 @@ class ParserV10():
         return raw[1]
 
     def __parse_volume_data(self, raw: list[str]):
-        [_id, title,
+        [_id, title, series,
         isbn, issn,
         publisher, published,
         pdf_link, cover_link] = raw[:VOLUME_DATA_LEN]
@@ -47,6 +47,7 @@ class ParserV10():
         'title': title,
         'publisher': publisher,
         'published': published,
+        'series': series,
         'ISBN': isbn,
         'ISSN': issn,
         'volumeLink': pdf_link,
