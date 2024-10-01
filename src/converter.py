@@ -31,7 +31,7 @@ VOLUME_ROW = 2
 ARTICLE_START_ROW = 4
 VOLUME_DATA_LEN = 9
 AUTHOR_DATA_LEN = 4
-ARTICLE_DATA_LEN = 10
+ARTICLE_DATA_LEN = 11
 
 class ParserV10():
     def __parse_version(self, raw: list[str]):
@@ -43,15 +43,15 @@ class ParserV10():
         publisher, published,
         pdf_link, cover_link] = raw[:VOLUME_DATA_LEN]
         return {
-        'id': _id,
-        'title': title,
-        'publisher': publisher,
-        'published': published,
-        'series': series,
-        'ISBN': isbn,
-        'ISSN': issn,
-        'volumeLink': pdf_link,
-        'coverLink': cover_link,
+        'id': _id.strip(),
+        'title': title.strip(),
+        'publisher': publisher.strip(),
+        'published': published.strip(),
+        'series': series.strip(),
+        'ISBN': isbn.strip(),
+        'ISSN': issn.strip(),
+        'volumeLink': pdf_link.strip(),
+        'coverLink': cover_link.strip(),
         }
 
     def __parse_authors_data(self, raw: list[str]):
@@ -71,13 +71,14 @@ class ParserV10():
         return res
 
     def __parse_article_data(self, raw: list[str]):
-        [_id, title,
+        [_id, title, language,
         page_range, doi,
         pdf_link, pdf_revised,
         abstract, note, keywords, bib_notes] = raw[:ARTICLE_DATA_LEN]
         partial_article = {
         'id': _id.strip(),
         'title': decode_escapes(title.strip()),
+        'language': language.strip(),
         'pageRange': page_range.strip(),
         'doi': doi.strip(),
         'pdfLink': pdf_link.strip()
