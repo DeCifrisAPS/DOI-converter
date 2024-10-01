@@ -72,7 +72,7 @@ class ValidationPage(QWizardPage):
 
     def chooseFile(self):
         path = QFileDialog.getOpenFileName(self,
-            "Open File", "./", "CSV Files (*.csv, *.tsv)")
+            "Open File", "./", "CSV Files (*.csv *.tsv)")
         self.chosen_path = path[0]
         self.wizard().input_file = self.chosen_path
         self.file_label.setText(self.chosen_path)
