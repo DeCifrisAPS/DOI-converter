@@ -3,12 +3,12 @@
     <FromCompany>De Componendis Cifris APS</FromCompany>
     <FromEmail>editorial@decifris.it</FromEmail>
     <ToCompany>mEDRA</ToCompany>
-    <SentDate>202410091437</SentDate>
+    <SentDate>202410091646</SentDate>
   </Header>
   <DOISerialArticleWork>
     <NotificationType>06</NotificationType>
-    <DOI>10.69091/koine/vol-3-I01</DOI>
-    <DOIWebsiteLink>https://decifris.it/koine/vol3/I01</DOIWebsiteLink>
+    <DOI>10.69091/koine/vol-2-T04</DOI>
+    <DOIWebsiteLink>https://decifris.it/koine/vol2/T04</DOIWebsiteLink>
     <RegistrantName>De Componendis Cifris APS</RegistrantName>
     <RegistrationAuthority>mEDRA</RegistrationAuthority>
     <SerialPublication>
@@ -29,23 +29,44 @@
       </SerialWork>
     </SerialPublication>
     <JournalIssue>
-      <JournalIssueNumber>3</JournalIssueNumber>
+      <JournalIssueNumber>2</JournalIssueNumber>
     </JournalIssue>
     <ContentItem>
       <TextItem>
         <PageRun>
-          <FirstPageNumber>2</FirstPageNumber>
-          <LastPageNumber>8</LastPageNumber>
+          <FirstPageNumber>17</FirstPageNumber>
+          <LastPageNumber>20</LastPageNumber>
         </PageRun>
         <NumberOfPages>1</NumberOfPages>
       </TextItem>
       <Title>
         <TitleType>01</TitleType>
-        <TitleText>Introduzione a De Cifris Eruditorum</TitleText>
+        <TitleText>On adapting NTRU for Post-Quantum Public-Key Encryption</TitleText>
       </Title>
+      <Contributor>
+        <ContributorRole>A01</ContributorRole>
+        <PersonName>Simone Dutto</PersonName>
+        <ProfessionalAffiliation>
+          <Affiliation>Politecnico di Torino</Affiliation>
+        </ProfessionalAffiliation>
+      </Contributor>
+      <Contributor>
+        <ContributorRole>A01</ContributorRole>
+        <PersonName>Gugliemino Morgani</PersonName>
+        <ProfessionalAffiliation>
+          <Affiliation>Telsy Spa</Affiliation>
+        </ProfessionalAffiliation>
+      </Contributor>
+      <Contributor>
+        <ContributorRole>A01</ContributorRole>
+        <PersonName>Edoardo Signorini</PersonName>
+        <ProfessionalAffiliation>
+          <Affiliation>Politecnico di Torino e Telsy Spa</Affiliation>
+        </ProfessionalAffiliation>
+      </Contributor>
       <Language>
         <LanguageRole>01</LanguageRole>
-        <LanguageCode>ita</LanguageCode>
+        <LanguageCode>eng</LanguageCode>
       </Language>
     </ContentItem>
   </DOISerialArticleWork>

@@ -56,6 +56,21 @@ def add_page_ranges(elt, rng):
     number_of_pages = ET.SubElement(text_item, 'NumberOfPages')
     number_of_pages.text = tot
 
+def add_author(elt, name, affiliation):
+    contributor = ET.SubElement(elt, 'Contributor')
+
+    contributor_role = ET.SubElement(contributor, 'ContributorRole')
+    contributor_role.text = 'A01'
+    
+    person_name = ET.SubElement(contributor, 'PersonName')
+    person_name.text = name
+
+    professional_affiliation = ET.SubElement(contributor, 'ProfessionalAffiliation')
+    
+    affiliation_tag = ET.SubElement(professional_affiliation, 'Affiliation')
+    affiliation_tag.text = affiliation
+
+
 def append_work(message):
     # Begin for each DOI
     work = ET.SubElement(message, 'DOISerialArticleWork')
@@ -64,10 +79,10 @@ def append_work(message):
     notification_type.text = '06' # 06 creation, 07 update
 
     doi = ET.SubElement(work, 'DOI')
-    doi.text = '10.69091/koine/vol-3-I01'
+    doi.text = '10.69091/koine/vol-2-T04'
 
     doi_website = ET.SubElement(work, 'DOIWebsiteLink')
-    doi_website.text = 'https://decifris.it/koine/vol3/I01'
+    doi_website.text = 'https://decifris.it/koine/vol2/T04'
 
     registrant_name = ET.SubElement(work, 'RegistrantName')
     registrant_name.text = 'De Componendis Cifris APS'
@@ -107,16 +122,19 @@ def append_work(message):
     journal_issue = ET.SubElement(work, 'JournalIssue')
 
     issue_number = ET.SubElement(journal_issue, 'JournalIssueNumber')
-    issue_number.text = '3'
+    issue_number.text = '2'
 
     # TODO: Journal Issue Designation?
     # TODO: Journal Issue Date?
 
     content_item = ET.SubElement(work, 'ContentItem')
 
-    add_page_ranges(content_item, '2-8')
-    add_title(content_item, 'Introduzione a De Cifris Eruditorum')
-    add_language(content_item, 'ita')
+    add_page_ranges(content_item, '17-20')
+    add_title(content_item, 'On adapting NTRU for Post-Quantum Public-Key Encryption')
+    add_author(content_item, 'Simone Dutto', 'Politecnico di Torino')
+    add_author(content_item, 'Gugliemino Morgani', 'Telsy Spa')
+    add_author(content_item, 'Edoardo Signorini', 'Politecnico di Torino e Telsy Spa')
+    add_language(content_item, 'eng')
     # add_author(content_item, '')
     # TODO: author
 
