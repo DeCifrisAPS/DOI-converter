@@ -91,3 +91,11 @@ Librerie Python3
 Qt5 on Python3
 - https://www.pythonguis.com/tutorials/creating-your-first-pyqt-window/
 
+
+
+DOI and mEDRA
+- https://www.medra.org/servlet/view?lang=it&doi=10.69091/KOINE/VOL-1-I03
+- https://www.medra.org/en/metadata_td.htm
+- https://www.medra.org/stdoc/ONIX_DOI_Serial_Article_2.0_v.2.pdf
+- https://www.medra.org/servlet/view-xml-validate?lang=en
+- https://pypi.org/project/dicttoxml/

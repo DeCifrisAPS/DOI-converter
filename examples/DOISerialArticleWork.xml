@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ONIXDOISerialArticleWorkRegistrationMessage xmlns:cl="http://www.medra.org/DOIMetadata/2.0/Citations" xmlns="http://www.editeur.org/onix/DOIMetadata/2.0"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.editeur.org/onix/DOIMetadata/2.0 http://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd">
+	<Header>
+		<FromCompany>Ediser</FromCompany>
+		<FromPerson>Anna Lionetti</FromPerson>
+		<FromEmail>anna.lionetti@aie.it</FromEmail>
+		<ToCompany>mEDRA</ToCompany>
+		<SentDate>20120806</SentDate>
+		<MessageNote>mercato accessibile</MessageNote>
+		<NotificationResponse>01</NotificationResponse>
+	</Header>
+	<DOISerialArticleWork xmlns="http://www.editeur.org/onix/DOIMetadata/2.0">
+		<!-- in NotificationType field use value 06 for DOI creation. For DOI update use value 07.-->
+		<NotificationType>06</NotificationType>
+		<DOI>10.1390/mercato_accessibile_lionetti</DOI>
+		<DOIWebsiteLink>http://www.giornaledellalibreria.it/</DOIWebsiteLink>
+		<RegistrantName>Ediser srl</RegistrantName>
+		<RegistrationAuthority>mEDRA</RegistrationAuthority>
+		<SerialPublication>
+			<SerialWork>
+				<Title>
+					<TitleType>01</TitleType>
+					<TitleText>Giornale della Libreria</TitleText>
+				</Title>
+				<Title>
+					<TitleType>05</TitleType>
+					<TitleText>GdL</TitleText>
+				</Title>
+				<Publisher>
+					<PublishingRole>01</PublishingRole>
+					<PublisherIdentifier>	
+      					<!--publisher identifier=ISNI-->
+						<PublisherIDType>16</PublisherIDType>	
+        				<IDValue>0000000012345678</IDValue>	
+   	 				</PublisherIdentifier>	
+					<PublisherName>Ediser srl</PublisherName>
+				</Publisher>
+				<CountryOfPublication>IT</CountryOfPublication>
+			</SerialWork>
+			<SerialVersion>
+				<ProductIdentifier>
+					<ProductIDType>07</ProductIDType>
+					<IDValue>11249137</IDValue>
+				</ProductIdentifier>
+				<ProductForm>JB</ProductForm>
+			</SerialVersion>
+		</SerialPublication>
+		<JournalIssue>
+			<JournalIssueNumber>1</JournalIssueNumber>
+			<JournalIssueDesignation>november 2012</JournalIssueDesignation>
+			<JournalIssueDate>
+				<DateFormat>01</DateFormat>
+				<Date>201211</Date>
+			</JournalIssueDate>
+		</JournalIssue>
+		<ContentItem>
+			<SequenceNumber>19</SequenceNumber>
+			<TextItem>
+				<TextItemType>10</TextItemType>
+			</TextItem>
+			<Title>
+				<TitleType>01</TitleType>
+				<TitleText>Un mercato accessibile</TitleText>
+			</Title>
+			<Contributor>
+				<SequenceNumber>1</SequenceNumber>
+				<ContributorRole>A01</ContributorRole>
+				<!--contributor identifier-->
+				<NameIdentifier>	
+        			<NameIDType>21</NameIDType>
+        			<IDValue>http://orcid.org/0000-0001-6157-8808</IDValue>	
+    			</NameIdentifier>
+				 <NameIdentifier>        
+        			<NameIDType>01</NameIDType>
+					<IDTypeName>proprietary identifier schema</IDTypeName>
+					<IDValue>ID value of the proprietary identifier schema</IDValue>
+   				</NameIdentifier>
+				<PersonName>Anna Lionetti</PersonName>
+				<PersonNameInverted>Lionetti, Anna</PersonNameInverted>
+				<!--NamesBeforeKey + KeyNames is the suggested form for contributor name-->
+				<NamesBeforeKey>Anna</NamesBeforeKey>
+				<KeyNames>Lionetti</KeyNames>
+			</Contributor>
+			<Language>
+				<LanguageRole>01</LanguageRole>
+				<LanguageCode>ita</LanguageCode>
+			</Language>
+			<Subject>
+				<SubjectSchemeIdentifier>20</SubjectSchemeIdentifier>
+				<SubjectHeadingText>accessibility</SubjectHeadingText>
+			</Subject>
+			<PublicationDate>201211</PublicationDate>
+			<CopyrightStatement>
+				<CopyrightYear>2012</CopyrightYear>
+				<CopyrightOwner>
+					<PersonName>Ediser srl</PersonName>
+				</CopyrightOwner>
+			</CopyrightStatement>
+		</ContentItem>
+	</DOISerialArticleWork>
+	<!--in order to register multiple DOIs within the same XML message, metadata groups included between the elements <DOISerialArticleWork> and </DOISerialArticleWork> must be repeated for each DOI-->
+	</ONIXDOISerialArticleWorkRegistrationMessage>

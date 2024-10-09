@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QFileDialog, QApplication
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5 import QtCore
 
-from converter import ParserV10, read_raw_data
+from converter-site import ParserV10, read_raw_data
 
 version = "10"
 

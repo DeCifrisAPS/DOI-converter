@@ -1,0 +1,2917 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	**************************************************
+	*                                                *
+	*     	    ONIX for DOI metadata schema         *
+	*                                                *
+	*          Original author: Editeur              *
+	*                                                *
+	*                  Release 2.0                   *
+	*                   Revision 6                   *
+	*                Status: RELEASED                *
+	*            Release date: 2009-03-16            *
+	*              Revised: 2023-06-19               *
+	*                                                *
+	*             (c) 2003-2015 mEDRA                *
+	*             http://www.medra.org/              *
+	*                                                *
+	**************************************************
+	
+	SCHEMA REVISION HISTORY (IN REVERSE CHRONOLOGICAL ORDER)
+	2024-10-02: [Revised by Paola Mazzucchi & Jehu Njikonga]
+	1. Restriction of the pattern of DOIString: (&amp;|&lt;|&gt;|&apos;|&quot;) not allowed, prefix lenght {4,9} digits and suffix max lenght {1,200}
+	2024-02-12: [Revised by Paola Mazzucchi & Jehu Njikonga]:
+	1. Modification of TextFormatCode: Added List34 code and heading of ONIX codelists Issue 36 instead of the former subset ["00", "01", "02", "03", "04"]
+	2. MainSubjectSchemeIdentifier is validated from now on upon List26 of ONIX_BookProduct_CodeLists.xsd instead of List27 CodeList Issue 36
+	2023-06-14: [Revised by Paola Mazzucchi & Marco Negri]:
+	1. Modification of TargetResourceLabel: code 0000 (Do Not Display) added
+	2. Modification of TargetResourceRole: codes AI (Personal Access) and AL (Institutional Access) added
+	2023-01-10: [Revised by Paola Mazzucchi & Jehu Njikonga]:
+	1. Modification of TargetResourceValue type (Rollback), from type URIString to xs:anyURI
+	2022-11-09: [Revised by Paola Mazzucchi & Jehu Njikonga]:
+	1. Modification of DOIString pattern (DOI suffix is mandatory)
+	2. Modification of TargetResourceValue type, from xs:anyURI to type URIString
+	2020-05-25: [Revised by Paola Mazzucchi & Jehu Njikonga]:
+	1. added elements
+	   MonographicProduct/ProductIdentifier 
+	   MonographicProduct/ProductForm 
+	   MonographicProduct/EpubFormat 
+	   MonographicProduct/EpubFormatVersion
+	   MonographicProduct/EpubFormatDescription
+	   MonographicProduct/Series
+	   MonographicProduct/EditionTypeCode
+	   MonographicProduct/EditionNumber
+	   MonographicProduct/VolumeNumber
+	   MonographicProduct/EditionStatement
+	   MonographicProduct/PublicationDate
+	   in 
+	   DOIMonographicWork
+	2. removed element 
+	   VolumeNumber 
+	   in 
+	   DOIMonographicWork
+	2019-12-05: [Revised by Paola Mazzucchi & Marco Negri]:
+	1. added definitions of elements 
+	   ConferenceName
+	   ConferenceTheme
+	   ConferenceAcronym
+	   ConferenceSponsor
+	   ConferenceNumber
+	   ConferenceLocation
+	   ConferenceDate
+	   VolumeNumber
+	2. added definition of types 
+	   Conference
+	   ConferenceDateType
+	3. added element 
+	   Conference 
+	   in 
+	   DOIMonographChapterVersion/MonographicPublication/MonographicWork
+	   DOIMonographChapterWork/MonographicPublication/MonographicWork
+	   DOIMonographicProduct
+	   DOIMonographicWork
+	4. added elements
+	   Series					
+	   EditionTypeCode
+	   EditionNumber
+	   VolumeNumber
+	   EditionStatement
+	   PublicationDate
+	   in 
+	   DOIMonographChapterVersion/MonographicPublication/MonographicProduct
+	   DOIMonographChapterWork/MonographicPublication/MonographicProduct
+	5. added element 
+	   VolumeNumber 
+	   in 
+	   DOIMonographicProduct
+	   DOIMonographicWork
+	6. added the elements
+	   Contributor
+	   NoContributor
+	   Language		
+	   OtherText			
+	   MainSubject
+	   Subject
+	   AudienceCode
+	   ImprintName
+	   Publisher
+	   CountryOfPublication
+	   CopyrightStatement
+	   in 
+	   DOIMonographChapterVersion/MonographicPublication/MonographicWork
+	   DOIMonographChapterWork/MonographicPublication/MonographicWork
+	   7. added elements
+	   cl:CitationList
+	   in 
+	   DOIMonographChapterVersion/ContentItem
+	   DOIMonographicWork
+	   8. added elements
+	   PageRun
+	   NumberOfPages
+	   cl:CitationList
+	   in 
+	   DOIMonographChapterWork/ContentItem
+	   9. added values 10,11,12,13,14,15,16,17,18,19,20,21 (all values from SerialArticleTextItemTypeCode) to MonographChapterTextItemTypeCode (ONIX List 42)
+	2019-12-18: [Revised by Jehu Njikonga]
+	   1. MainSubjectSchemeIdentifier is validated from now on upon List27 of ONIX_BookProduct_CodeLists.xsd instead of List26
+	2019-12-18: [Revised by Jehu Njikonga]
+	   1. added the element cl:CitationList in DOIMonographicProduct;
+	2019-11-13: [Revised by Marco Negri]
+	   1. added types AccessIndicators, FreeToRead, License, LicenseType.
+	   2. added element AccessIndicators (optional and not repeatable) after Collection in each RegistrationMessage.
+	2018-11-15: [Revised by Marco Negri & Jehu Njikonga]
+	   1. added Collection and related elements.
+	2015-02-18: [Revised by Giuseppe Trotta]
+	   1. added ISTC and ISSN-L codes in both SerialWorkIDTypeCode and SerialTitleIDTypeCode element types
+	   2. added "Title in other language" and "Title acronym or initialism" codes in both SerialWorkTitleTypeCode and TitleTypeCode element types
+	   3. added GTIN and ISBN-13 codes in SerialVersionIDTypeCode element type
+	   4. added "FundRef DOI" code in PublisherIDType element type
+	   5. added "Publication funder", "Research funder" and "Funding body" in PublishingRoleCode element type
+	   6. added FundingIdentifier composite and related elements
+	2014-03-19: [Revised by Marco Negri]
+	   1. added NameIdentifier in the Contributor composite
+	   2. added PublisherIdentifier in the Publisher composite
+	   3. added NameIdentifier type
+	   4. added PublisherIdentifier type
+	   5. added NameIDType type
+	   6. added PublisherIDType type
+	2011-07-22: [Revised by Marco Negri]
+	   1. added values 'AD08' and 'AD09' in the definition of the element TargetResourceLabel
+	2011-03-18: [Revised by Marco Negri]
+	   1. added value 'AA14'in the definition of the element TargetResourceLabel
+	2010-06-18: [Revised by Marco Negri]
+	   1. added values 'AA10', 'AA11', 'AA12', 'AA13' AB09, AB10, AB11, AB12, AB13, AB14, AB15, AB16, AB17, AB18, AB19, AB20 and AB21 in the definition of the element TargetResourceLabel
+	2009-03-16: Switching from version 1.1 to version 2.0 [Revised by Marco Negri]
+	   1. added the namespace of citations: "http://www.medra.org/DOIMetadata/2.0/Citations" con alias "cl";
+	   2. added the link to the schema of citations: <xs:import namespace="http://www.medra.org/DOIMetadata/2.0/Citations" schemaLocation="DOIMetadata2.0_Citations.xsd"/>;
+	   3. added the element cl:CitationList in DOISerialArticleVersion -> ContentItem;
+	   4. added the element cl:CitationList in DOISerialArticleWork -> ContentItem;
+	   5. changed the definition of the type EmailString: now the syntactic correctness of the entered email address is checked too;
+	   6. added the element ProfessionalAffiliation in Contributor;
+	   7. adding the definition of the elements ProfessionalAffiliation, ProfessionalPosition and Affiliation
+-->		
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.editeur.org/onix/DOIMetadata/2.0" xmlns:cl="http://www.medra.org/DOIMetadata/2.0/Citations" targetNamespace="http://www.editeur.org/onix/DOIMetadata/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="ONIX_XHTML_Subset.xsd"/>
+	<xs:include schemaLocation="ONIX_BookProduct_CodeLists.xsd"/>
+	<xs:import namespace="http://www.medra.org/DOIMetadata/2.0/Citations" schemaLocation="ONIX_DOICitations_2.0.xsd"/>
+	<xs:element name="ONIXDOIMonographChapterVersionRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOIMonographChapterVersion" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeVersions" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeVersions" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ProductIDType" type="MonographicProductIDTypeCode"/>
+										<xs:element name="IDValue" type="ProductIDValueString"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="MonographicPublication">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="MonographicWork">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="WorkIDType" type="RelatedWorkIDTypeCode"/>
+																<xs:element name="IDValue" type="WorkIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Conference" type="Conference" minOccurs="0"/>
+													<xs:element name="Title" type="Title" maxOccurs="unbounded"/>
+													<xs:choice minOccurs="0">
+														<xs:element ref="Contributor" maxOccurs="unbounded"/>
+														<xs:element ref="NoContributor"/>
+													</xs:choice>
+													<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91" minOccurs="0"/>
+													<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="MonographicProduct">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="ProductIDType" type="List5"/>
+																<xs:element name="IDValue" type="ProductIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ProductForm" type="List7"/>
+													<xs:sequence minOccurs="0">
+														<xs:element name="EpubFormat" type="List11"/>
+														<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+													<xs:element name="Series" type="Series" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="EditionTypeCode" type="List21" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="EditionNumber" type="EditionNumber" minOccurs="0"/>
+													<xs:element name="VolumeNumber" type="VolumeNumber" minOccurs="0"/>
+													<xs:element name="EditionStatement" type="EditionStatementString" minOccurs="0"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91" minOccurs="0"/>
+													<xs:element name="PublicationDate" type="PublicationDate" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ContentItem">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:choice minOccurs="0">
+											<xs:element name="SequenceNumber" type="SequenceNumber"/>
+											<xs:element name="LevelSequenceNumber" type="LevelSequenceNumberString"/>
+										</xs:choice>
+										<xs:element name="TextItem" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:sequence>
+														<xs:element name="TextItemType" type="MonographChapterTextItemTypeCode"/>
+														<xs:element name="PageRun" type="PageRun" minOccurs="0" maxOccurs="unbounded"/>
+														<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+													</xs:sequence>
+													<xs:sequence>
+														<xs:element name="PageRun" type="PageRun" maxOccurs="unbounded"/>
+														<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="NumberOfPages" type="NumberOfPagesNumber"/>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Extent" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ExtentType" type="List23"/>
+													<xs:element name="ExtentValue" type="ExtentValueDecimal"/>
+													<xs:element name="ExtentUnit" type="List24"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="ContentItemEnumeration" type="ContentItemEnumeration" minOccurs="0"/>
+										<xs:element name="Title" type="Title" maxOccurs="unbounded"/>
+										<xs:choice minOccurs="0">
+											<xs:element ref="Contributor" maxOccurs="unbounded"/>
+											<xs:element ref="NoContributor"/>
+										</xs:choice>
+										<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="PublicationDate" type="PublicationDate" minOccurs="0"/>
+										<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="RelatedWork" type="ProductRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="RelatedProduct" type="ProductRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element ref="cl:CitationList" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ONIXDOIMonographChapterWorkRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOIMonographChapterWork" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeWorks" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeWorks" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="WorkIDType" type="MonographicWorkIDTypeCode"/>
+										<xs:element name="IDValue" type="WorkIDValueString"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="MonographicPublication">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="MonographicWork">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="WorkIDType" type="RelatedWorkIDTypeCode"/>
+																<xs:element name="IDValue" type="WorkIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Conference" type="Conference" minOccurs="0"/>
+													<xs:element name="Title" type="Title" maxOccurs="unbounded"/>
+													<xs:choice minOccurs="0">
+														<xs:element ref="Contributor" maxOccurs="unbounded"/>
+														<xs:element ref="NoContributor"/>
+													</xs:choice>
+													<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91" minOccurs="0"/>
+													<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="MonographicProduct" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="ProductIDType" type="List5"/>
+																<xs:element name="IDValue" type="ProductIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ProductForm" type="List7"/>
+													<xs:sequence minOccurs="0">
+														<xs:element name="EpubFormat" type="List11"/>
+														<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+													<xs:element name="Series" type="Series" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="EditionTypeCode" type="List21" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="EditionNumber" type="EditionNumber" minOccurs="0"/>
+													<xs:element name="VolumeNumber" type="VolumeNumber" minOccurs="0"/>
+													<xs:element name="EditionStatement" type="EditionStatementString" minOccurs="0"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91" minOccurs="0"/>
+													<xs:element name="PublicationDate" type="PublicationDate" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ContentItem">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:choice minOccurs="0">
+											<xs:element name="SequenceNumber" type="SequenceNumber"/>
+											<xs:element name="LevelSequenceNumber" type="LevelSequenceNumberString"/>
+										</xs:choice>
+										<xs:element name="TextItem" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:sequence>
+														<xs:element name="TextItemType" type="MonographChapterTextItemTypeCode"/>
+														<xs:element name="PageRun" type="PageRun" minOccurs="0" maxOccurs="unbounded"/>
+														<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+													</xs:sequence>
+													<xs:sequence>
+														<xs:element name="PageRun" type="PageRun" maxOccurs="unbounded"/>
+														<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="NumberOfPages" type="NumberOfPagesNumber"/>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="ContentItemEnumeration" type="ContentItemEnumeration" minOccurs="0"/>
+										<xs:element name="Title" type="Title" maxOccurs="unbounded"/>
+										<xs:choice minOccurs="0">
+											<xs:element ref="Contributor" maxOccurs="unbounded"/>
+											<xs:element ref="NoContributor"/>
+										</xs:choice>
+										<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="PublicationDate" type="PublicationDate" minOccurs="0"/>
+										<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="RelatedWork" type="WorkRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="RelatedProduct" type="WorkRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element ref="cl:CitationList" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ONIXDOIMonographicProductRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOIMonographicProduct" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeVersions" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeVersions" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ProductIDType" type="MonographicProductIDTypeCode"/>
+										<xs:element name="IDValue" type="ProductIDValueString"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ProductForm" type="List7"/>
+							<xs:sequence minOccurs="0">
+								<xs:element name="EpubFormat" type="List11"/>
+								<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+							</xs:sequence>
+							<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+							<xs:element name="Series" type="Series" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="Conference" type="Conference" minOccurs="0"/>
+							<xs:element name="Title" type="Title" maxOccurs="unbounded"/>
+							<xs:choice minOccurs="0">
+								<xs:element ref="Contributor" maxOccurs="unbounded"/>
+								<xs:element ref="NoContributor"/>
+							</xs:choice>
+							<xs:element name="EditionTypeCode" type="List21" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="EditionNumber" type="EditionNumber" minOccurs="0"/>
+							<xs:element name="VolumeNumber" type="VolumeNumber" minOccurs="0"/>
+							<xs:element name="EditionStatement" type="EditionStatementString" minOccurs="0"/>
+							<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+							<xs:element name="PagesRoman" type="NumberOfPagesString" minOccurs="0"/>
+							<xs:element name="PagesArabic" type="NumberOfPagesNumber" minOccurs="0"/>
+							<xs:element name="Extent" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ExtentType" type="List23"/>
+										<xs:element name="ExtentValue" type="ExtentValueDecimal"/>
+										<xs:element name="ExtentUnit" type="List24"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+							<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="CountryOfPublication" type="List91"/>
+							<xs:element name="PublicationDate" type="PublicationDate"/>
+							<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="RelatedWork" type="ProductRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="RelatedProduct" type="ProductRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element ref="cl:CitationList" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ONIXDOIMonographicWorkRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOIMonographicWork" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeWorks" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeWorks" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="WorkIDType" type="MonographicWorkIDTypeCode"/>
+										<xs:element name="IDValue" type="WorkIDValueString"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Series" type="Series" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="Conference" type="Conference" minOccurs="0"/>
+							<xs:element name="Title" type="Title" maxOccurs="unbounded"/>
+							<xs:choice minOccurs="0">
+								<xs:element ref="Contributor" maxOccurs="unbounded"/>
+								<xs:element ref="NoContributor"/>
+							</xs:choice>
+							<xs:element name="EditionTypeCode" type="List21" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="EditionNumber" type="EditionNumber" minOccurs="0"/>
+							<xs:element name="EditionStatement" type="EditionStatementString" minOccurs="0"/>
+							<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+							<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="CountryOfPublication" type="List91"/>
+							<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="MonographicProduct" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ProductIDType" type="List5"/>
+													<xs:element name="IDValue" type="ProductIDValueString"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="ProductForm" type="List7"/>
+										<xs:sequence minOccurs="0">
+											<xs:element name="EpubFormat" type="List11"/>
+											<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+										</xs:sequence>
+										<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+										<xs:element name="Series" type="Series" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="EditionTypeCode" type="List21" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="EditionNumber" type="EditionNumber" minOccurs="0"/>
+										<xs:element name="VolumeNumber" type="VolumeNumber" minOccurs="0"/>
+										<xs:element name="EditionStatement" type="EditionStatementString" minOccurs="0"/>
+										<xs:element name="PublicationDate" type="PublicationDate" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="RelatedWork" type="WorkRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="RelatedProduct" type="WorkRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element ref="cl:CitationList" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ONIXDOISerialArticleVersionRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOISerialArticleVersion" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeVersions" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeVersions" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ProductIDType" type="SerialArticleVersionIDTypeCode"/>
+										<xs:element name="IDValue" type="ProductIDValueString"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="SerialPublication">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SerialWork">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="WorkIDType" type="SerialWorkIDTypeCode"/>
+																<xs:element name="IDValue" type="WorkIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Title" type="SerialWorkTitle" maxOccurs="unbounded"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SerialVersion">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="ProductIDType" type="SerialVersionIDTypeCode"/>
+																<xs:element name="IDValue" type="ProductIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ProductForm" type="SerialVersionProductFormCode"/>
+													<xs:sequence minOccurs="0">
+														<xs:element name="EpubFormat" type="List11"/>
+														<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="JournalIssue">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="JournalVolumeNumber" type="JournalVolumeNumber" minOccurs="0"/>
+										<xs:choice>
+											<xs:sequence>
+												<xs:element name="JournalIssueNumber" type="JournalIssueNumber"/>
+												<xs:element name="JournalIssueDesignation" type="JournalIssueDesignationString" minOccurs="0"/>
+												<xs:element name="JournalIssueDate" type="JournalIssueDate" minOccurs="0"/>
+											</xs:sequence>
+											<xs:sequence>
+												<xs:element name="JournalIssueDesignation" type="JournalIssueDesignationString"/>
+												<xs:element name="JournalIssueDate" type="JournalIssueDate" minOccurs="0"/>
+											</xs:sequence>
+											<xs:element name="JournalIssueDate" type="JournalIssueDate"/>
+										</xs:choice>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ContentItem">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SequenceNumber" type="SequenceNumber" minOccurs="0"/>
+										<xs:element name="TextItem" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:sequence>
+														<xs:element name="TextItemType" type="SerialArticleTextItemTypeCode"/>
+														<xs:element name="PageRun" type="PageRun" minOccurs="0" maxOccurs="unbounded"/>
+														<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+													</xs:sequence>
+													<xs:sequence>
+														<xs:element name="PageRun" type="PageRun" maxOccurs="unbounded"/>
+														<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="NumberOfPages" type="NumberOfPagesNumber"/>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Extent" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ExtentType" type="List23"/>
+													<xs:element name="ExtentValue" type="ExtentValueDecimal"/>
+													<xs:element name="ExtentUnit" type="List24"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Title" type="Title" maxOccurs="unbounded"/>
+										<xs:choice minOccurs="0">
+											<xs:element ref="Contributor" maxOccurs="unbounded"/>
+											<xs:element ref="NoContributor"/>
+										</xs:choice>
+										<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="PublicationDate" type="PublicationDate" minOccurs="0"/>
+										<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="RelatedWork" type="ProductRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="RelatedProduct" type="ProductRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element ref="cl:CitationList" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ONIXDOISerialArticleWorkRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOISerialArticleWork" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeWorks" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeWorks" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="WorkIDType" type="SerialArticleWorkIDTypeCode"/>
+										<xs:element name="IDValue" type="WorkIDValueString"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="SerialPublication">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SerialWork">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="WorkIDType" type="SerialWorkIDTypeCode"/>
+																<xs:element name="IDValue" type="WorkIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Title" type="SerialWorkTitle" maxOccurs="unbounded"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SerialVersion" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="ProductIDType" type="SerialVersionIDTypeCode"/>
+																<xs:element name="IDValue" type="ProductIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ProductForm" type="SerialVersionProductFormCode"/>
+													<xs:sequence minOccurs="0">
+														<xs:element name="EpubFormat" type="List11"/>
+														<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="JournalIssue">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="JournalVolumeNumber" type="JournalVolumeNumber" minOccurs="0"/>
+										<xs:choice>
+											<xs:sequence>
+												<xs:element name="JournalIssueNumber" type="JournalIssueNumber"/>
+												<xs:element name="JournalIssueDesignation" type="JournalIssueDesignationString" minOccurs="0"/>
+												<xs:element name="JournalIssueDate" type="JournalIssueDate" minOccurs="0"/>
+											</xs:sequence>
+											<xs:sequence>
+												<xs:element name="JournalIssueDesignation" type="JournalIssueDesignationString"/>
+												<xs:element name="JournalIssueDate" type="JournalIssueDate" minOccurs="0"/>
+											</xs:sequence>
+											<xs:element name="JournalIssueDate" type="JournalIssueDate"/>
+										</xs:choice>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ContentItem">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SequenceNumber" type="SequenceNumber" minOccurs="0"/>
+										<xs:element name="TextItem" minOccurs="0">
+											<xs:complexType>
+												<xs:choice>
+													<xs:sequence>
+														<xs:element name="TextItemType" type="SerialArticleTextItemTypeCode"/>
+														<xs:element name="PageRun" type="PageRun" minOccurs="0" maxOccurs="unbounded"/>
+														<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+													</xs:sequence>
+													<xs:sequence>
+														<xs:element name="PageRun" type="PageRun" maxOccurs="unbounded"/>
+														<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="NumberOfPages" type="NumberOfPagesNumber"/>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Title" type="Title" maxOccurs="unbounded"/>
+										<xs:choice minOccurs="0">
+											<xs:element ref="Contributor" maxOccurs="unbounded"/>
+											<xs:element ref="NoContributor"/>
+										</xs:choice>
+										<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="PublicationDate" type="PublicationDate" minOccurs="0"/>
+										<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="RelatedWork" type="WorkRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="RelatedProduct" type="WorkRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element ref="cl:CitationList" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ONIXDOISerialIssueVersionRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOISerialIssueVersion" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeVersions" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeVersions" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ProductIDType" type="SerialIssueVersionIDTypeCode"/>
+										<xs:element name="IDValue" type="ProductIDValueString"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="SerialPublication">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SerialWork">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="WorkIDType" type="SerialWorkIDTypeCode"/>
+																<xs:element name="IDValue" type="WorkIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Title" type="SerialWorkTitle" maxOccurs="unbounded"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SerialVersion">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="ProductIDType" type="SerialVersionIDTypeCode"/>
+																<xs:element name="IDValue" type="ProductIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ProductForm" type="SerialVersionProductFormCode"/>
+													<xs:sequence minOccurs="0">
+														<xs:element name="EpubFormat" type="List11"/>
+														<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="JournalIssue">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="JournalVolumeNumber" type="JournalVolumeNumber" minOccurs="0"/>
+										<xs:choice>
+											<xs:sequence>
+												<xs:element name="JournalIssueNumber" type="JournalIssueNumber"/>
+												<xs:element name="JournalIssueDesignation" type="JournalIssueDesignationString" minOccurs="0"/>
+												<xs:element name="JournalIssueDate" type="JournalIssueDate" minOccurs="0"/>
+											</xs:sequence>
+											<xs:sequence>
+												<xs:element name="JournalIssueDesignation" type="JournalIssueDesignationString"/>
+												<xs:element name="JournalIssueDate" type="JournalIssueDate" minOccurs="0"/>
+											</xs:sequence>
+											<xs:element name="JournalIssueDate" type="JournalIssueDate"/>
+										</xs:choice>
+										<xs:element name="PublicationDate" type="PublicationDate" minOccurs="0"/>
+										<xs:element name="Title" type="JournalIssueTitle" minOccurs="0"/>
+										<xs:element name="PageRun" type="PageRun" minOccurs="0" maxOccurs="unbounded"/>
+										<xs:element name="NumberOfPages" type="NumberOfPagesNumber" minOccurs="0"/>
+										<xs:element name="Extent" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ExtentType" type="List23"/>
+													<xs:element name="ExtentValue" type="ExtentValueDecimal"/>
+													<xs:element name="ExtentUnit" type="List24"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="RelatedWork" type="ProductRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="RelatedProduct" type="ProductRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ONIXDOISerialIssueWorkRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOISerialIssueWork" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeWorks" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeWorks" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="WorkIDType" type="SerialIssueWorkIDTypeCode"/>
+										<xs:element name="IDValue" type="WorkIDValueString"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="SerialPublication">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SerialWork">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="WorkIDType" type="SerialWorkIDTypeCode"/>
+																<xs:element name="IDValue" type="WorkIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Title" type="SerialWorkTitle" maxOccurs="unbounded"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SerialVersion" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="ProductIDType" type="SerialVersionIDTypeCode"/>
+																<xs:element name="IDValue" type="ProductIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ProductForm" type="SerialVersionProductFormCode"/>
+													<xs:sequence minOccurs="0">
+														<xs:element name="EpubFormat" type="List11"/>
+														<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="JournalIssue">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="JournalVolumeNumber" type="JournalVolumeNumber" minOccurs="0"/>
+										<xs:choice>
+											<xs:sequence>
+												<xs:element name="JournalIssueNumber" type="JournalIssueNumber"/>
+												<xs:element name="JournalIssueDesignation" type="JournalIssueDesignationString" minOccurs="0"/>
+												<xs:element name="JournalIssueDate" type="JournalIssueDate" minOccurs="0"/>
+											</xs:sequence>
+											<xs:sequence>
+												<xs:element name="JournalIssueDesignation" type="JournalIssueDesignationString"/>
+												<xs:element name="JournalIssueDate" type="JournalIssueDate" minOccurs="0"/>
+											</xs:sequence>
+											<xs:element name="JournalIssueDate" type="JournalIssueDate"/>
+										</xs:choice>
+										<xs:element name="PublicationDate" type="PublicationDate" minOccurs="0"/>
+										<xs:element name="Title" type="JournalIssueTitle" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="CopyrightStatement" type="CopyrightStatement" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="RelatedWork" type="WorkRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="RelatedProduct" type="WorkRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ONIXDOISerialTitleVersionRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOISerialTitleVersion" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeVersions" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeVersions" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="SerialPublication">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SerialWork">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="WorkIDType" type="SerialWorkIDTypeCode"/>
+																<xs:element name="IDValue" type="WorkIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Title" type="SerialWorkTitle" maxOccurs="unbounded"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SerialVersion">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="ProductIDType" type="SerialTitleVersionIDTypeCode"/>
+																<xs:element name="IDValue" type="ProductIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ProductForm" type="SerialVersionProductFormCode"/>
+													<xs:sequence minOccurs="0">
+														<xs:element name="EpubFormat" type="List11"/>
+														<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="PublishingStatus" type="SerialTitlePublishingStatusCode" minOccurs="0"/>
+							<xs:element name="DateFirstPublished" type="SerialTitleDateFirstOrLastPublished" minOccurs="0"/>
+							<xs:element name="DateLastPublished" type="SerialTitleDateFirstOrLastPublished" minOccurs="0"/>
+							<xs:element name="CopyrightStatement" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="CopyrightOwner" type="CopyrightOwner" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="RelatedWork" type="ProductRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="RelatedProduct" type="ProductRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ONIXDOISerialTitleWorkRegistrationMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="Header"/>
+				<xs:element name="DOISerialTitleWork" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NotificationType" type="NotificationTypeCode"/>
+							<xs:element name="DOI" type="DOIString"/>
+							<xs:element name="DOIWebsiteLink" type="URIString"/>
+							<xs:choice>
+								<xs:element name="Website" type="Website" minOccurs="0" maxOccurs="unbounded"/>
+								<xs:element name="DOIResolution" type="DOIResolutionType"/>
+							</xs:choice>
+							<xs:element name="Collection" minOccurs="0" maxOccurs="unbounded">	
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="property" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="crawler-based"/>
+												<xs:enumeration value="text-mining"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AccessIndicators" type="AccessIndicators" minOccurs="0"/>
+							<xs:element name="DOIStructuralType" type="DOIStructuralTypeCodeWorks" minOccurs="0"/>
+							<xs:element name="DOIMode" type="DOIModeCodeWorks" minOccurs="0"/>
+							<xs:element name="RegistrantName" type="RegistrantNameString"/>
+							<xs:element name="RegistrationAuthority" type="RegistrationAuthorityCode" minOccurs="0"/>
+							<xs:element name="SerialPublication">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SerialWork">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="WorkIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="WorkIDType" type="SerialTitleWorkIDTypeCode"/>
+																<xs:element name="IDValue" type="WorkIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="Title" type="SerialWorkTitle" maxOccurs="unbounded"/>
+													<xs:element name="ImprintName" type="ImprintNameString" minOccurs="0"/>
+													<xs:element name="Publisher" type="Publisher" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="CountryOfPublication" type="List91"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SerialVersion" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ProductIdentifier" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="ProductIDType" type="SerialVersionIDTypeCode"/>
+																<xs:element name="IDValue" type="ProductIDValueString"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ProductForm" type="SerialVersionProductFormCode"/>
+													<xs:sequence minOccurs="0">
+														<xs:element name="EpubFormat" type="List11"/>
+														<xs:element name="EpubFormatVersion" type="EpubFormatVersionString" minOccurs="0"/>
+													</xs:sequence>
+													<xs:element name="EpubFormatDescription" type="EpubFormatDescriptionString" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Language" type="Language" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="MainSubject" type="MainSubject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="Subject" type="Subject" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="AudienceCode" type="List28" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="OtherText" type="OtherText" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="PublishingStatus" type="SerialTitlePublishingStatusCode" minOccurs="0"/>
+							<xs:element name="DateFirstPublished" type="SerialTitleDateFirstOrLastPublished" minOccurs="0"/>
+							<xs:element name="DateLastPublished" type="SerialTitleDateFirstOrLastPublished" minOccurs="0"/>
+							<xs:element name="CopyrightStatement" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="CopyrightOwner" type="CopyrightOwner" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="RelatedWork" type="WorkRelatedWork" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="RelatedProduct" type="WorkRelatedProduct" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="ContentItemEnumeration">
+		<xs:sequence>
+			<xs:element name="ContentItemTypeName" type="ContentItemTypeNameString" minOccurs="0"/>
+			<xs:element name="ContentItemNumber" type="ContentItemNumberString"/>
+			<xs:element name="ContentItemEnumeration" type="ContentItemEnumeration" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Contributor">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SequenceNumber" type="ContributorSequenceNumber" minOccurs="0"/>
+				<xs:element name="ContributorRole" type="List17" maxOccurs="unbounded"/>
+				<xs:element name="NameIdentifier" type="NameIdentifier" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:choice>
+					<xs:sequence>
+						<xs:choice>
+							<xs:sequence>
+							<xs:choice>
+								<xs:sequence>
+									<xs:element ref="PersonName"/>
+									<xs:element ref="PersonNameInverted" minOccurs="0"/>
+									<xs:element ref="NamesBeforeKey" minOccurs="0"/>
+									<xs:element ref="KeyNames" minOccurs="0"/>
+									<xs:element ref="Name" minOccurs="0"/>
+								</xs:sequence>
+								<xs:sequence>
+									<xs:element ref="PersonNameInverted"/>
+									<xs:element ref="NamesBeforeKey" minOccurs="0"/>
+									<xs:element ref="KeyNames" minOccurs="0"/>
+									<xs:element ref="Name" minOccurs="0"/>
+								</xs:sequence>
+								<xs:sequence>
+									<xs:element ref="NamesBeforeKey" minOccurs="0"/>
+									<xs:element ref="KeyNames"/>
+									<xs:element ref="Name" minOccurs="0"/>
+								</xs:sequence>
+								<xs:element ref="Name"/>
+							</xs:choice>
+							<xs:element ref="ProfessionalAffiliation" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+							<xs:element ref="CorporateName"/>
+						</xs:choice>
+						<xs:element ref="BiographicalNote" minOccurs="0"/>
+					</xs:sequence>
+					<xs:element name="UnnamedPersons" type="List19"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="CopyrightOwner">
+		<xs:choice>
+			<xs:element ref="PersonName" minOccurs="0"/>
+			<xs:element ref="CorporateName"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="CopyrightStatement">
+		<xs:sequence>
+			<xs:element name="CopyrightYear" type="CopyrightYear" maxOccurs="unbounded"/>
+			<xs:element name="CopyrightOwner" type="CopyrightOwner" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Header">
+		<xs:sequence>
+			<xs:element name="FromCompany" type="CompanyNameString"/>
+			<xs:element name="FromPerson" type="FromPersonNameString" minOccurs="0"/>
+			<xs:element name="FromEmail" type="EmailString"/>
+			<xs:element name="ToCompany" type="CompanyNameString"/>
+			<xs:element name="MessageNumber" type="MessageNumber" minOccurs="0"/>
+			<xs:element name="MessageRepeat" type="MessageNumber" minOccurs="0"/>
+			<xs:element name="SentDate" type="DateOrDateTime"/>
+			<xs:element name="MessageNote" type="NoteString" minOccurs="0"/>
+			<xs:element name="NotificationResponse" type="NotificationResponse" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="JournalIssueDate">
+		<xs:sequence>
+			<xs:element name="DateFormat" type="DateFormatCode"/>
+			<xs:element name="Date" type="JournalIssueDateString"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="JournalIssueTitle">
+		<xs:sequence>
+			<xs:element name="TitleType" type="JournalIssueTitleTypeCode"/>
+			<xs:element name="TitleText" type="TitleString"/>
+			<xs:element name="Subtitle" type="TitleString" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="generalAttributes"/>
+	</xs:complexType>
+	<xs:complexType name="Language">
+		<xs:sequence>
+			<xs:element name="LanguageRole" type="List22"/>
+			<xs:element name="LanguageCode" type="List74"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MainSubject">
+		<xs:sequence>
+			<xs:element name="MainSubjectSchemeIdentifier" type="List26"/>
+			<xs:element name="SubjectSchemeVersion" type="SubjectSchemeVersionString" minOccurs="0"/>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="SubjectCode" type="SubjectCodeString"/>
+					<xs:element name="SubjectHeadingText" type="SubjectHeadingTextString" minOccurs="0"/>
+				</xs:sequence>
+				<xs:element name="SubjectHeadingText" type="SubjectHeadingTextString"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="NoEdition"/>
+	<xs:complexType name="OtherText">
+		<xs:sequence>
+			<xs:element name="TextTypeCode" type="List33"/>
+			<xs:element name="Text" type="Text"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PageRun">
+		<xs:sequence>
+			<xs:element name="FirstPageNumber" type="PageNumberString"/>
+			<xs:element name="LastPageNumber" type="PageNumberString" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ProductRelatedProduct">
+		<xs:sequence>
+			<xs:element name="RelationCode" type="ProductProductRelationCode"/>
+			<xs:element name="ProductIdentifier" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ProductIDType" type="RelatedProductIDTypeCode"/>
+						<xs:element name="IDValue" type="ProductIDValueString"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ProductRelatedWork">
+		<xs:sequence>
+			<xs:element name="RelationCode" type="ProductWorkRelationCode"/>
+			<xs:element name="WorkIdentifier" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="WorkIDType" type="RelatedWorkIDTypeCode"/>
+						<xs:element name="IDValue" type="WorkIDValueString"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Publisher">
+		<xs:sequence>
+			<xs:element name="PublishingRole" type="PublishingRoleCode"/>
+			<xs:element name="PublisherIdentifier" type="PublisherIdentifier" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="PublisherName" type="PublisherNameString"/>
+			<xs:element name="FundingIdentifier" type="FundingIdentifier" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SerialTitleDateFirstOrLastPublished">
+		<xs:sequence>
+			<xs:element name="DateFormat" type="DateFirstPublishedFormatCode"/>
+			<xs:element name="Date" type="JournalIssueDateString"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SerialWorkTitle">
+		<xs:sequence>
+			<xs:element name="TitleType" type="SerialWorkTitleTypeCode"/>
+			<xs:element name="TitleText" type="TitleString"/>
+			<xs:element name="Subtitle" type="TitleString" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="generalAttributes"/>
+	</xs:complexType>
+	<xs:complexType name="Series">
+		<xs:sequence>
+			<xs:element name="SeriesIdentifier" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SeriesIDType" type="List13"/>
+						<xs:element name="IDTypeName" type="SeriesIDTypeNameString" minOccurs="0"/>
+						<xs:element name="IDValue" type="SeriesIDValueString"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TitleOfSeries">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="TitleString">
+							<xs:attributeGroup ref="generalAttributes"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Subject">
+		<xs:sequence>
+			<xs:element name="SubjectSchemeIdentifier" type="List27"/>
+			<xs:element name="SubjectSchemeName" type="SubjectSchemeNameString" minOccurs="0"/>
+			<xs:element name="SubjectSchemeVersion" type="SubjectSchemeVersionString" minOccurs="0"/>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="SubjectCode" type="SubjectCodeString"/>
+					<xs:element name="SubjectHeadingText" type="SubjectHeadingTextString" minOccurs="0"/>
+				</xs:sequence>
+				<xs:element name="SubjectHeadingText" type="SubjectHeadingTextString"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Text" mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="p"/>
+			<xs:element ref="h1"/>
+			<xs:element ref="h2"/>
+			<xs:element ref="h3"/>
+			<xs:element ref="h4"/>
+			<xs:element ref="h5"/>
+			<xs:element ref="h6"/>
+			<xs:element ref="div"/>
+			<xs:element ref="ul"/>
+			<xs:element ref="ol"/>
+			<xs:element ref="dl"/>
+			<xs:element ref="pre"/>
+			<xs:element ref="hr"/>
+			<xs:element ref="blockquote"/>
+			<xs:element ref="address"/>
+			<xs:element ref="table"/>
+			<xs:element ref="a"/>
+			<xs:element ref="br"/>
+			<xs:element ref="span"/>
+			<xs:element ref="bdo"/>
+			<xs:element ref="object"/>
+			<xs:element ref="img"/>
+			<xs:element ref="map"/>
+			<xs:element ref="tt"/>
+			<xs:element ref="i"/>
+			<xs:element ref="b"/>
+			<xs:element ref="big"/>
+			<xs:element ref="small"/>
+			<xs:element ref="em"/>
+			<xs:element ref="strong"/>
+			<xs:element ref="dfn"/>
+			<xs:element ref="code"/>
+			<xs:element ref="q"/>
+			<xs:element ref="sub"/>
+			<xs:element ref="sup"/>
+			<xs:element ref="samp"/>
+			<xs:element ref="kbd"/>
+			<xs:element ref="var"/>
+			<xs:element ref="cite"/>
+			<xs:element ref="abbr"/>
+			<xs:element ref="acronym"/>
+		</xs:choice>
+		<xs:attributeGroup ref="generalAttributes"/>
+	</xs:complexType>
+	<xs:complexType name="Title">
+		<xs:sequence>
+			<xs:element name="TitleType" type="TitleTypeCode"/>
+			<xs:element name="TitleText" type="TitleString"/>
+			<xs:element name="Subtitle" type="TitleString" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="generalAttributes"/>
+	</xs:complexType>
+	<xs:complexType name="Website">
+		<xs:sequence>
+			<xs:element name="WebsiteRole" type="WebsiteRoleCode"/>
+			<xs:element name="WebsiteLink" type="URIString"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WorkRelatedProduct">
+		<xs:sequence>
+			<xs:element name="RelationCode" type="WorkProductRelationCode"/>
+			<xs:element name="ProductIdentifier" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ProductIDType" type="RelatedProductIDTypeCode"/>
+						<xs:element name="IDValue" type="ProductIDValueString"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WorkRelatedWork">
+		<xs:sequence>
+			<xs:element name="RelationCode" type="WorkWorkRelationCode"/>
+			<xs:element name="WorkIdentifier" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="WorkIDType" type="RelatedWorkIDTypeCode"/>
+						<xs:element name="IDValue" type="WorkIDValueString"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="CompanyNameString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ContentItemNumberString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ContentItemTypeNameString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ContributorSequenceNumber">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CopyrightYear">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="(19|2\d)\d\d"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Date">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="2\d\d\d(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-8])"/>
+			<xs:pattern value="200[048]0229"/>
+			<xs:pattern value="2[1-9]0[48]0229"/>
+			<xs:pattern value="2\d([2468][048]|[13579][26])0229"/>
+			<xs:pattern value="2\d\d\d(0[13-9]|1[0-2])(29|30)"/>
+			<xs:pattern value="2\d\d\d(0[13578]|1[02])31"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DateFirstPublishedFormatCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="00"/>
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="02"/>
+			<xs:enumeration value="03"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="05"/>
+			<xs:enumeration value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DateFormatCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="00"/>
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="02"/>
+			<xs:enumeration value="03"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="05"/>
+			<xs:enumeration value="06"/>
+			<xs:enumeration value="07"/>
+			<xs:enumeration value="08"/>
+			<xs:enumeration value="09"/>
+			<xs:enumeration value="10"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DateOrDateTime">
+		<xs:union memberTypes="Date DateTime"/>
+	</xs:simpleType>
+	<xs:simpleType name="DateTime">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="2\d\d\d(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-8])([01][0-9]|2[0-3])[0-5][0-9]"/>
+			<xs:pattern value="2[048]0[048]0229([01][0-9]|2[0-3])[0-5][0-9]"/>
+			<xs:pattern value="2[1235679]0[48]0229([01][0-9]|2[0-3])[0-5][0-9]"/>
+			<xs:pattern value="2\d([2468][048]|[13579][26])0229([01][0-9]|2[0-3])[0-5][0-9]"/>
+			<xs:pattern value="2\d\d\d(0[13-9]|1[0-2])(29|30)([01][0-9]|2[0-3])[0-5][0-9]"/>
+			<xs:pattern value="2\d\d\d(0[13578]|1[02])31([01][0-9]|2[0-3])[0-5][0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DOIApplicationProfileCode">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DOIModeCodeVersions">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Audio"/>
+			<xs:enumeration value="Audiovisual"/>
+			<xs:enumeration value="Visual"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DOIModeCodeWorks">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Abstract"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DOIString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="6"/>
+			<xs:pattern value="1749/\S+"/>
+			<xs:pattern value="10\.[0-9]{4,9}/[^\s&amp;&lt;&gt;&apos;&quot;]{1,200}"/>
+			<xs:pattern value="10\.978\.\d*/\S+"/>
+			<xs:pattern value="10\.979\.\d*/\S+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DOIStructuralTypeCodeVersions">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DigitalFixation"/>
+			<xs:enumeration value="PhysicalFixation"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DOIStructuralTypeCodeWorks">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Abstraction"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EditionNumber">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VolumeNumber">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EditionStatementString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EmailString">
+		<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+				<xs:pattern value="[\p{L}\p{N}!/+\-_]+(\.[\p{L}\p{N}!/+\-_]+)*@[\p{L}\p{N}!/+\-_]+(\.[\p{L}_-]+)+"/>
+			</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EpubFormatVersionString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EpubFormatDescriptionString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ExtentValueDecimal">
+		<xs:restriction base="xs:float"/>
+	</xs:simpleType>
+	<xs:simpleType name="ImprintNameString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FromPersonNameString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="JournalIssueDateString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="JournalIssueDesignationString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="JournalIssueNumber">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="JournalIssueTitleTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="07"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="JournalVolumeNumber">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LevelSequenceNumberString">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([0-9])+(\.([0-9])*)*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MessageNumber">
+		<xs:restriction base="xs:int"/>
+	</xs:simpleType>
+	<xs:simpleType name="MonographChapterTextItemTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="02"/>
+			<xs:enumeration value="03"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="10"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="12"/>
+			<xs:enumeration value="13"/>
+			<xs:enumeration value="14"/>
+			<xs:enumeration value="15"/>
+			<xs:enumeration value="16"/>
+			<xs:enumeration value="17"/>
+			<xs:enumeration value="18"/>
+			<xs:enumeration value="19"/>
+			<xs:enumeration value="20"/>
+			<xs:enumeration value="21"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MonographicProductIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="02"/>
+			<xs:enumeration value="03"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="05"/>
+			<xs:enumeration value="13"/>
+			<xs:enumeration value="14"/>
+			<xs:enumeration value="15"/>
+			<xs:enumeration value="17"/>
+			<xs:enumeration value="22"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MonographicWorkIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="11"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NoteString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NotificationTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="06"/>
+			<xs:enumeration value="07"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NotificationResponse">
+		<xs:restriction base="xs:string">	
+			<!--e-mail-->			
+			<xs:enumeration value="01"/>
+			<!--callback-->
+			<xs:enumeration value="02"/>
+			<!--ftp-->
+			<xs:enumeration value="03"/>
+</xs:restriction>
+</xs:simpleType>
+	<xs:simpleType name="NumberOfPagesNumber">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NumberOfPagesString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PageNumberString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ProductIDValueString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ProductProductRelationCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="80"/>
+			<xs:enumeration value="81"/>
+			<xs:enumeration value="82"/>
+			<xs:enumeration value="83"/>
+			<xs:enumeration value="84"/>
+			<xs:enumeration value="85"/>
+			<xs:enumeration value="86"/>
+			<xs:enumeration value="87"/>
+			<xs:enumeration value="88"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ProductWorkRelationCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="80"/>
+			<xs:enumeration value="81"/>
+			<xs:enumeration value="82"/>
+			<xs:enumeration value="83"/>
+			<xs:enumeration value="85"/>
+			<xs:enumeration value="86"/>
+			<xs:enumeration value="87"/>
+			<xs:enumeration value="88"/>
+			<xs:enumeration value="90"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PublicationDate">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="(1[2-9]|2\d)\d\d(0[1-9]|1[0-2])?"/>
+			<xs:pattern value="(1[2-9]|2\d)\d\d(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-8])"/>
+			<xs:pattern value="(1[2-9]|2[1-9])0[48]0229"/>
+			<xs:pattern value="200[048]0229"/>
+			<xs:pattern value="(1[2-9]|2\d)([2468][048]|[13579][26])0229"/>
+			<xs:pattern value="(1[2-9]|2\d)\d\d(0[13-9]|1[0-2])(29|30)"/>
+			<xs:pattern value="(1[2-9]|2\d)\d\d(0[13578]|1[02])31"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PublisherNameString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PublishingRoleCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="02"/>
+			<xs:enumeration value="14"/>
+			<xs:enumeration value="15"/>
+			<xs:enumeration value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RegistrantNameString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RegistrationAuthorityCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="mEDRA"/>
+			<xs:enumeration value="NielsenBookData"/>
+			<xs:enumeration value="OPOCE"/>
+			<xs:enumeration value="OP"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RelatedProductIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="02"/>
+			<xs:enumeration value="03"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="05"/>
+			<xs:enumeration value="06"/>
+			<xs:enumeration value="10"/>
+			<xs:enumeration value="13"/>
+			<xs:enumeration value="14"/>
+			<xs:enumeration value="15"/>
+			<xs:enumeration value="17"/>
+			<xs:enumeration value="22"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RelatedWorkIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="06"/>
+			<xs:enumeration value="11"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SequenceNumber">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialArticleTextItemTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="10"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="12"/>
+			<xs:enumeration value="13"/>
+			<xs:enumeration value="14"/>
+			<xs:enumeration value="15"/>
+			<xs:enumeration value="16"/>
+			<xs:enumeration value="17"/>
+			<xs:enumeration value="18"/>
+			<xs:enumeration value="19"/>
+			<xs:enumeration value="20"/>
+			<xs:enumeration value="21"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialArticleVersionIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialArticleWorkIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="11"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SeriesIDTypeNameString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SeriesIDValueString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialIssueVersionIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialIssueWorkIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="11"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialTitlePublishingStatusCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="08"/>
+			<xs:enumeration value="09"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialTitleVersionIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="07"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialTitleWorkIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="08"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialWorkTitleTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="05"/>
+			<xs:enumeration value="06"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialWorkIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="06"/>
+			<xs:enumeration value="08"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialVersionProductFormCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="JB"/>
+			<xs:enumeration value="JC"/>
+			<xs:enumeration value="JD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SerialVersionIDTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="03"/>
+			<xs:enumeration value="06"/>
+			<xs:enumeration value="07"/>
+			<xs:enumeration value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SubjectHeadingTextString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SubjectCodeString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SubjectSchemeNameString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SubjectSchemeVersionString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TextFormatCode">
+		<xs:restriction base="List34"/>
+	</xs:simpleType>
+	<xs:simpleType name="TitleString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TitleTypeCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="01"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="05"/>
+			<xs:enumeration value="06"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TransliterationCode">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="URIString">
+		<xs:restriction base="xs:anyURI">
+			<xs:maxLength value="2048"/>
+			<xs:minLength value="1"/>
+			<xs:pattern value="([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]|[fF][tT][pP])://.*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="WebsiteRoleCode">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d\d"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="WorkIDValueString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="WorkProductRelationCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="80"/>
+			<xs:enumeration value="81"/>
+			<xs:enumeration value="82"/>
+			<xs:enumeration value="83"/>
+			<xs:enumeration value="85"/>
+			<xs:enumeration value="86"/>
+			<xs:enumeration value="87"/>
+			<xs:enumeration value="88"/>
+			<xs:enumeration value="89"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="WorkWorkRelationCode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="80"/>
+			<xs:enumeration value="81"/>
+			<xs:enumeration value="82"/>
+			<xs:enumeration value="83"/>
+			<xs:enumeration value="85"/>
+			<xs:enumeration value="86"/>
+			<xs:enumeration value="87"/>
+			<xs:enumeration value="88"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:attributeGroup name="generalAttributes">
+		<xs:attribute name="language" type="List74" use="optional"/>
+		<xs:attribute name="textformat" type="TextFormatCode" use="optional"/>
+		<xs:attribute name="transliteration" type="TransliterationCode" use="optional"/>
+		<xs:attribute name="textcase" type="TextCaseCode" use="optional"/>
+	</xs:attributeGroup>
+	<xs:complexType name="DOIResolutionType">
+		<xs:sequence>
+			<xs:element name="TargetResource" maxOccurs="unbounded" type="TargetResourceType"/>
+		</xs:sequence>
+		<xs:attribute name="language" type="List74"/>
+	</xs:complexType>
+	<xs:complexType name="TargetResourceType">
+		<xs:sequence>
+			<xs:element name="TargetResourceSequenceNumber" minOccurs="0" type="xs:integer"/>
+			<xs:element name="TargetResourceProvider" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="01"/>
+						<xs:enumeration value="02"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TargetResourceType">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="URL"/>
+						<xs:enumeration value="DOI"/>
+						<xs:enumeration value="FTP"/>
+						<xs:enumeration value="e-mail"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TargetResourceValue" type="xs:anyURI"/>
+			<xs:element name="TargetResourceRole">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="AA"/>
+						<xs:enumeration value="AB"/>
+						<xs:enumeration value="AC"/>
+						<xs:enumeration value="AD"/>
+						<xs:enumeration value="AE"/>
+						<xs:enumeration value="AF"/>
+						<xs:enumeration value="AG"/>
+						<xs:enumeration value="AH"/>
+						<!-- Personal Access -->
+						<xs:enumeration value="AI"/>
+						<!-- Institutional Access -->
+						<xs:enumeration value="AL"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TargetResourceLabel">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!-- Do Not Display -->
+						<xs:enumeration value="0000"/>
+						<xs:enumeration value="AA01"/>
+						<xs:enumeration value="AA02"/>
+						<xs:enumeration value="AA03"/>
+						<xs:enumeration value="AA04"/>
+						<xs:enumeration value="AA05"/>
+						<xs:enumeration value="AA06"/>
+						<xs:enumeration value="AA07"/>
+						<xs:enumeration value="AA08"/>
+						<xs:enumeration value="AA09"/>
+						<xs:enumeration value="AA10"/>
+						<xs:enumeration value="AA11"/>
+						<xs:enumeration value="AA12"/>
+						<xs:enumeration value="AA13"/>
+						<xs:enumeration value="AA14"/>
+						<xs:enumeration value="AB01"/>
+						<xs:enumeration value="AB02"/>
+						<xs:enumeration value="AB03"/>
+						<xs:enumeration value="AB04"/>
+						<xs:enumeration value="AB05"/>
+						<xs:enumeration value="AB06"/>
+						<xs:enumeration value="AB07"/>
+						<xs:enumeration value="AB08"/>
+						<xs:enumeration value="AB09"/>
+						<xs:enumeration value="AB10"/>
+						<xs:enumeration value="AB11"/>
+						<xs:enumeration value="AB12"/>
+						<xs:enumeration value="AB13"/>
+						<xs:enumeration value="AB14"/>
+						<xs:enumeration value="AB15"/>
+						<xs:enumeration value="AB16"/>
+						<xs:enumeration value="AB17"/>
+						<xs:enumeration value="AB18"/>
+						<xs:enumeration value="AB19"/>
+						<xs:enumeration value="AB20"/>
+						<xs:enumeration value="AB21"/>
+						<xs:enumeration value="AC01"/>
+						<xs:enumeration value="AD01"/>
+						<xs:enumeration value="AD02"/>
+						<xs:enumeration value="AD03"/>
+						<xs:enumeration value="AD04"/>
+						<xs:enumeration value="AD05"/>
+						<xs:enumeration value="AD06"/>
+						<xs:enumeration value="AD07"/>
+						<xs:enumeration value="AD08"/>
+						<xs:enumeration value="AD09"/>						
+						<xs:enumeration value="AE01"/>
+						<xs:enumeration value="AE02"/>
+						<xs:enumeration value="AF01"/>
+						<xs:enumeration value="AF02"/>
+						<xs:enumeration value="AF03"/>
+						<xs:enumeration value="AF04"/>
+						<xs:enumeration value="AF05"/>
+						<xs:enumeration value="AF06"/>
+						<xs:enumeration value="AF07"/>
+						<xs:enumeration value="AG01"/>
+						<xs:enumeration value="AG02"/>
+						<xs:enumeration value="AG03"/>
+						<xs:enumeration value="AG04"/>
+						<xs:enumeration value="AG05"/>
+						<xs:enumeration value="AH01"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TargetResourceDescription">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="200"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="mode" fixed="menu">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="menu"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:simpleType name="NonEmptyString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:pattern value="(.|\s)*\S(.|\s)*" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="KeyNames">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="NonEmptyString">
+					<xs:attribute name="refname" type="xs:NMTOKEN" fixed="KeyNames"/>
+					<xs:attributeGroup ref="generalAttributes"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Name">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PersonNameType">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="List18">
+								<xs:attribute name="refname" type="xs:NMTOKEN" fixed="PersonNameType"/>
+								<xs:attributeGroup ref="generalAttributes"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="PersonName" minOccurs="0"/>
+				<xs:element ref="PersonNameInverted" minOccurs="0"/>
+				<xs:element ref="NamesBeforeKey" minOccurs="0"/>
+				<xs:element ref="KeyNames" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PersonName">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="NonEmptyString">
+					<xs:attribute name="refname" type="xs:NMTOKEN" fixed="PersonName"/>
+					<xs:attributeGroup ref="generalAttributes"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PersonNameInverted">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="NonEmptyString">
+					<xs:attribute name="refname" type="xs:NMTOKEN" fixed="PersonNameInverted"/>
+					<xs:attributeGroup ref="generalAttributes"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="NamesBeforeKey">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="NonEmptyString">
+					<xs:attribute name="refname" type="xs:NMTOKEN" fixed="NamesBeforeKey"/>
+					<xs:attributeGroup ref="generalAttributes"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CorporateName">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="NonEmptyString">
+					<xs:attribute name="refname" type="xs:NMTOKEN" fixed="CorporateName"/>
+					<xs:attributeGroup ref="generalAttributes"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="BiographicalNote">
+		<xs:complexType mixed="true">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="p"/>
+				<xs:element ref="h1"/>
+				<xs:element ref="h2"/>
+				<xs:element ref="h3"/>
+				<xs:element ref="h4"/>
+				<xs:element ref="h5"/>
+				<xs:element ref="h6"/>
+				<xs:element ref="div"/>
+				<xs:element ref="ul"/>
+				<xs:element ref="ol"/>
+				<xs:element ref="dl"/>
+				<xs:element ref="pre"/>
+				<xs:element ref="hr"/>
+				<xs:element ref="blockquote"/>
+				<xs:element ref="address"/>
+				<xs:element ref="table"/>
+				<xs:element ref="a"/>
+				<xs:element ref="br"/>
+				<xs:element ref="span"/>
+				<xs:element ref="bdo"/>
+				<xs:element ref="object"/>
+				<xs:element ref="img"/>
+				<xs:element ref="map"/>
+				<xs:element ref="tt"/>
+				<xs:element ref="i"/>
+				<xs:element ref="b"/>
+				<xs:element ref="big"/>
+				<xs:element ref="small"/>
+				<xs:element ref="em"/>
+				<xs:element ref="strong"/>
+				<xs:element ref="dfn"/>
+				<xs:element ref="code"/>
+				<xs:element ref="q"/>
+				<xs:element ref="sub"/>
+				<xs:element ref="sup"/>
+				<xs:element ref="samp"/>
+				<xs:element ref="kbd"/>
+				<xs:element ref="var"/>
+				<xs:element ref="cite"/>
+				<xs:element ref="abbr"/>
+				<xs:element ref="acronym"/>
+			</xs:choice>
+			<xs:attribute name="refname" type="xs:NMTOKEN" fixed="BiographicalNote"/>
+			<xs:attributeGroup ref="generalAttributes"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="NoContributor">
+		<xs:complexType>
+			<xs:attribute name="refname" type="xs:NMTOKEN" fixed="NoContributor"/>
+			<xs:attributeGroup ref="generalAttributes"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ProfessionalAffiliation">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="ProfessionalPosition"/>
+					<xs:element ref="Affiliation" minOccurs="0"/>
+				</xs:sequence>
+				<xs:element ref="Affiliation"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+		<xs:element name="ProfessionalPosition">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="NonEmptyString">
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+		<xs:element name="Affiliation">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="NonEmptyString">
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="NameIdentifier">
+		<xs:sequence>
+			<xs:element name="NameIDType" type="NameIDType"/>
+			<xs:element name="IDTypeName" type="NonEmptyString" minOccurs="0"/>
+			<xs:element name="IDValue" type="NonEmptyString"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PublisherIdentifier">
+		<xs:sequence>
+			<xs:element name="PublisherIDType" type="PublisherIDType"/>
+			<xs:element name="IDTypeName" type="NonEmptyString" minOccurs="0"/>
+			<xs:element name="IDValue" type="NonEmptyString"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FundingIdentifier">
+		<xs:sequence>
+			<xs:element name="FundingIDType" type="FundingIDType"/>
+			<xs:element name="IDTypeName" type="NonEmptyString" minOccurs="0"/>
+			<xs:element name="IDValue" type="NonEmptyString"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="NameIDType">
+		<xs:restriction base="xs:string">
+			 <!--Proprietary-->			
+			<xs:enumeration value="01"/>
+			<!--ISNI-->			
+			<xs:enumeration value="16"/>
+			<!--ORCID-->
+			<xs:enumeration value="21"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PublisherIDType">
+		<xs:restriction base="xs:string">
+			 <!--Proprietary-->			
+			<xs:enumeration value="01"/>
+			<!--ISNI-->			
+			<xs:enumeration value="16"/>
+			<!-- FundRef DOI -->
+			<xs:enumeration value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FundingIDType">
+		<xs:restriction base="xs:string">
+			 <!--Proprietary-->			
+			<xs:enumeration value="01"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:element name="Item">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:choice minOccurs="0">
+						<xs:element ref="Resource"/>
+					</xs:choice>
+				</xs:sequence>
+				<xs:attribute name="crawler" use="optional">
+					<xs:simpleType>
+						<xs:restriction base="xs:NMTOKEN">
+							<xs:enumeration value="altavista"/>
+							<xs:enumeration value="google"/>
+							<xs:enumeration value="msn"/>
+							<xs:enumeration value="scirus"/>
+							<xs:enumeration value="yahoo"/>
+							<xs:enumeration value="iParadigms"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Resource">
+	<xs:complexType>
+		<xs:simpleContent>
+			<xs:extension base="resource_t">
+				<xs:attributeGroup ref="mime_type.atts"/>
+				<xs:attribute name="content_version">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="vor"/>
+							<xs:enumeration value="am"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:element>
+
+<xs:simpleType name="resource_t">
+	<xs:restriction base="xs:anyURI">
+		<xs:maxLength value="2048"/>
+		<xs:minLength value="1"/>
+		<xs:pattern value="([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]|[fF][tT][pP])://.*"/>
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:attributeGroup name="mime_type.atts">
+	<xs:attribute name="mime_type" use="optional">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="text/plain"/>
+				<xs:enumeration value="text/richtext"/>
+				<xs:enumeration value="text/enriched"/>
+				<xs:enumeration value="text/tab-separated-values"/>
+				<xs:enumeration value="text/html"/>
+				<xs:enumeration value="text/sgml"/>
+				<xs:enumeration value="text/css"/>
+				<xs:enumeration value="text/rtf"/>
+				<xs:enumeration value="text/xml"/>
+				<xs:enumeration value="text/xml-external-parsed-entity"/>
+				<xs:enumeration value="multipart/mixed"/>
+				<xs:enumeration value="multipart/alternative"/>
+				<xs:enumeration value="multipart/digest"/>
+				<xs:enumeration value="multipart/parallel"/>
+				<xs:enumeration value="multipart/appledouble"/>
+				<xs:enumeration value="multipart/header-set"/>
+				<xs:enumeration value="multipart/form-data"/>
+				<xs:enumeration value="multipart/report"/>
+				<xs:enumeration value="multipart/voice-message"/>
+				<xs:enumeration value="multipart/signed"/>
+				<xs:enumeration value="multipart/encrypted"/>
+				<xs:enumeration value="multipart/byteranges"/>
+				<xs:enumeration value="application/eps"/>
+				<xs:enumeration value="application/epub+zip"/>
+				<xs:enumeration value="application/octet-stream"/>
+				<xs:enumeration value="application/postscript"/>
+				<xs:enumeration value="application/rtf"/>
+				<xs:enumeration value="application/applefile"/>
+				<xs:enumeration value="application/mac-binhex40"/>
+				<xs:enumeration value="application/wordperfect5.1"/>
+				<xs:enumeration value="application/pdf"/>
+				<xs:enumeration value="application/x-gzip"/>
+				<xs:enumeration value="application/zip"/>
+				<xs:enumeration value="application/gzip"/>
+				<xs:enumeration value="application/macwriteii"/>
+				<xs:enumeration value="application/msword"/>
+				<xs:enumeration value="application/sgml"/>
+				<xs:enumeration value="application/cals-1840"/>
+				<xs:enumeration value="application/pgp-encrypted"/>
+				<xs:enumeration value="application/pgp-signature"/>
+				<xs:enumeration value="application/pgp-keys"/>
+				<xs:enumeration value="application/sgml-open-catalog"/>
+				<xs:enumeration value="application/rc"/>
+				<xs:enumeration value="application/xml"/>
+				<xs:enumeration value="application/xml-external-parsed-entity"/>
+				<xs:enumeration value="application/xml-dtd"/>
+				<xs:enumeration value="application/batch-SMTP"/>
+				<xs:enumeration value="application/ipp"/>
+				<xs:enumeration value="application/ocsp-request"/>
+				<xs:enumeration value="application/ocsp-response"/>
+				<xs:enumeration value="application/vnd.oasis.opendocument.text"/>
+				<xs:enumeration value="application/vnd.oasis.opendocument.presentation"/>
+				<xs:enumeration value="application/vnd.oasis.opendocument.spreadsheet"/>
+				<xs:enumeration value="application/vnd.ms-excel"/>
+				<xs:enumeration value="application/vnd.ms-powerpoint"/>
+				<xs:enumeration value="application/vnd.openxmlformats-officedocument.presentationml.presentation"/>
+				<xs:enumeration value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+				<xs:enumeration value="application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+				<xs:enumeration value="application/epub+zip"/>
+				<xs:enumeration value="application/regex.clinical-trial-number"/>
+				<xs:enumeration value="image/fits"/>
+				<xs:enumeration value="image/jpeg"/>
+				<xs:enumeration value="image/gif"/>
+				<xs:enumeration value="image/ief"/>
+				<xs:enumeration value="image/g3fax"/>
+				<xs:enumeration value="image/tiff"/>
+				<xs:enumeration value="image/Graphics-Metafile"/>
+				<xs:enumeration value="image/png"/>
+				<xs:enumeration value="audio/basic"/>
+				<xs:enumeration value="audio/32kadpcm"/>
+				<xs:enumeration value="audio/mpeg"/>
+				<xs:enumeration value="audio/parityfec"/>
+				<xs:enumeration value="audio/MP4A-LATM"/>
+				<xs:enumeration value="audio/mpa-robust"/>
+				<xs:enumeration value="video/x-ms-wmv"/>
+				<xs:enumeration value="video/avi"/>
+				<xs:enumeration value="video/mpeg"/>
+				<xs:enumeration value="video/quicktime"/>
+				<xs:enumeration value="video/pointer"/>
+				<xs:enumeration value="video/parityfec"/>
+				<xs:enumeration value="video/MP4V-ES"/>
+				<xs:enumeration value="video/mp4"/>
+				<xs:enumeration value="chemical/x-alchemy"/>
+				<xs:enumeration value="chemical/x-cache-csf"/>
+				<xs:enumeration value="chemical/x-cactvs-binary"/>
+				<xs:enumeration value="chemical/x-cactvs-binary"/>
+				<xs:enumeration value="chemical/x-cactvs-binary"/>
+				<xs:enumeration value="chemical/x-cdx"/>
+				<xs:enumeration value="chemical/x-cerius"/>
+				<xs:enumeration value="chemical/x-chemdraw"/>
+				<xs:enumeration value="chemical/x-cif"/>
+				<xs:enumeration value="chemical/x-mmcif"/>
+				<xs:enumeration value="chemical/x-chem3d"/>
+				<xs:enumeration value="chemical/x-cmdf"/>
+				<xs:enumeration value="chemical/x-compass"/>
+				<xs:enumeration value="chemical/x-crossfire"/>
+				<xs:enumeration value="chemical/x-cml"/>
+				<xs:enumeration value="chemical/x-csml"/>
+				<xs:enumeration value="chemical/x-ctx"/>
+				<xs:enumeration value="chemical/x-cxf"/>
+				<xs:enumeration value="chemical/x-daylight-smiles"/>
+				<xs:enumeration value="chemical/x-embl-dl-nucleotide"/>
+				<xs:enumeration value="chemical/x-galactic-spc"/>
+				<xs:enumeration value="Data/spcvue.htm"/>
+				<xs:enumeration value="chemical/x-gamess-input"/>
+				<xs:enumeration value="chemical/x-gaussian-input"/>
+				<xs:enumeration value="chemical/x-gaussian-checkpoint"/>
+				<xs:enumeration value="chemical/x-gaussian-cube"/>
+				<xs:enumeration value="chemical/x-gcg8-sequence"/>
+				<xs:enumeration value="chemical/x-genbank"/>
+				<xs:enumeration value="chemical/x-isostar"/>
+				<xs:enumeration value="chemical/x-jcamp-dx"/>
+				<xs:enumeration value="chemical/x-kinemage"/>
+				<xs:enumeration value="chemical/x-macmolecule"/>
+				<xs:enumeration value="chemical/x-macromodel-input"/>
+				<xs:enumeration value="chemical/x-mdl-molfile"/>
+				<xs:enumeration value="chemical/x-mdl-rdfile"/>
+				<xs:enumeration value="chemical/x-mdl-rxnfile"/>
+				<xs:enumeration value="chemical/x-mdl-sdfile"/>
+				<xs:enumeration value="chemical/x-mdl-tgf"/>
+				<xs:enumeration value="chemical/x-mif"/>
+				<xs:enumeration value="chemical/x-mol2"/>
+				<xs:enumeration value="chemical/x-molconn-Z"/>
+				<xs:enumeration value="chemical/x-mopac-input"/>
+				<xs:enumeration value="chemical/x-mopac-graph"/>
+				<xs:enumeration value="chemical/x-ncbi-asn1"/>
+				<xs:enumeration value="chemical/x-ncbi-asn1-binary"/>
+				<xs:enumeration value="chemical/x-pdb"/>
+				<xs:enumeration value="chemical/x-swissprot"/>
+				<xs:enumeration value="chemical/x-vamas-iso14976"/>
+				<xs:enumeration value="chemical/x-vmd"/>
+				<xs:enumeration value="chemical/x-xtel"/>
+				<xs:enumeration value="chemical/x-xyz"/>
+				<xs:enumeration value="model/vrml"/>
+				<xs:enumeration value="audio/x-wav"/>
+				<xs:enumeration value="video/x-flv"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+</xs:attributeGroup>
+
+	<xs:complexType name="AccessIndicators">
+		<xs:choice>
+			<xs:sequence>
+      	<xs:element ref="FreeToRead"/>
+        <xs:element ref="License" minOccurs="0" maxOccurs="unbounded"/>
+    	</xs:sequence>
+    	<xs:element ref="License" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:element name="FreeToRead">
+      <xs:complexType>
+          <xs:attribute name="enddate" use="optional" type="xs:date"/>
+          <xs:attribute name="startdate" use="optional" type="xs:date"/>
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="License">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="LicenseRefType">
+                    <xs:attribute name="startdate" type="xs:date" use="optional"/>
+                    <xs:attribute name="appliesto" use="optional">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:NMTOKEN">
+                                <xs:enumeration value="vor"/>
+                                <xs:enumeration value="am"/>
+                                <xs:enumeration value="tdm"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:simpleType name="LicenseRefType">
+        <xs:restriction base="xs:anyURI">
+            <xs:minLength value="10"/>
+            <xs:pattern value="([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]|[fF][tT][pP])://.*"/>
+        </xs:restriction>
+    </xs:simpleType>
+	
+	<!--definition Conference elements-->
+	<xs:element name="ConferenceName">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="512"/>
+				<xs:minLength value="3"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="ConferenceTheme">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="255"/>
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="ConferenceAcronym">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="127"/>
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="ConferenceSponsor">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="255"/>
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="ConferenceNumber">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="15"/>
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="ConferenceLocation">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:maxLength value="255"/>
+				<xs:minLength value="2"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:simpleType name="ConferenceDateType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+			<xs:minLength value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="ConferenceDate">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="ConferenceDateType">
+					<xs:attribute name="startdate" type="Date" use="optional"/>
+					<xs:attribute name="enddate" type="Date" use="optional"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="Conference">
+		<xs:sequence>
+			<xs:element ref="ConferenceName"/>
+			<xs:element ref="ConferenceTheme" minOccurs="0"/>
+			<xs:element ref="ConferenceAcronym" minOccurs="0"/>
+			<xs:element ref="ConferenceSponsor" minOccurs="0" maxOccurs="10"/>
+			<xs:element ref="ConferenceNumber" minOccurs="0"/>
+			<xs:element ref="ConferenceLocation" minOccurs="0"/>
+			<xs:element ref="ConferenceDate" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--end definition Conference elements-->
+	
+</xs:schema>
