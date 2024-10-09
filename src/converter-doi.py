@@ -7,15 +7,7 @@ import datetime
 import xml.etree.ElementTree as ET
 import lxml.etree as LET
 
-def test():
-    message = ET.Element('ONIXDOISerialArticleWorkRegistrationMessage')
-    message.attrib['xmlns'] = 'http://www.editeur.org/onix/DOIMetadata/2.0'
-    # message.attrib['xmlns'] = 'http://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd'
-    message.attrib['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
-    message.attrib['xmlns:cl'] = 'http://www.medra.org/DOIMetadata/2.0/Citations'
-    message.attrib['xsi:schemaLocation'] = 'http://www.editeur.org/onix/DOIMetadata/2.0 http://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd'
-    root = ET.ElementTree(message)
-
+def create_header(message):
     header = ET.SubElement(message, 'Header')
     from_company = ET.SubElement(header, 'FromCompany')
     from_company.text = 'De Componendis Cifris APS'
@@ -29,8 +21,42 @@ def test():
     sent_date = ET.SubElement(header, 'SentDate')
     sent_date.text = datetime.datetime.now().strftime('%Y%m%d%H%M')
 
-    # message.append(header)
+def add_title(elt, title):
+    work_title = ET.SubElement(elt, 'Title')
 
+    title_type = ET.SubElement(work_title, 'TitleType')
+    title_type.text = '01' # Distinctive title (05 abbreviated)
+
+    title_type = ET.SubElement(work_title, 'TitleText')
+    title_type.text = title
+
+def add_language(elt, lang):
+    language = ET.SubElement(elt, 'Language')
+
+    language_role = ET.SubElement(language, 'LanguageRole')
+    language_role.text = '01'
+
+    language_code = ET.SubElement(language, 'LanguageCode')
+    language_code.text = lang
+
+def add_page_ranges(elt, rng):
+    fst = rng.split('-')[0]
+    snd = rng.split('-')[0]
+    tot = str(int(snd) - int(snd) + 1)
+    text_item = ET.SubElement(elt, 'TextItem')
+
+    page_run = ET.SubElement(text_item, 'PageRun')
+    
+    first_page = ET.SubElement(page_run, 'FirstPageNumber')
+    first_page.text = rng.split('-')[0]
+
+    last_page = ET.SubElement(page_run, 'LastPageNumber')
+    last_page.text = rng.split('-')[1]
+
+    number_of_pages = ET.SubElement(text_item, 'NumberOfPages')
+    number_of_pages.text = tot
+
+def append_work(message):
     # Begin for each DOI
     work = ET.SubElement(message, 'DOISerialArticleWork')
 
@@ -44,7 +70,7 @@ def test():
     doi_website.text = 'https://decifris.it/koine/vol3/I01'
 
     registrant_name = ET.SubElement(work, 'RegistrantName')
-    registrant_name.text = 'De Componendir Cifris APS'
+    registrant_name.text = 'De Componendis Cifris APS'
 
     registration_authority = ET.SubElement(work, 'RegistrationAuthority')
     registration_authority.text = 'mEDRA'
@@ -53,15 +79,16 @@ def test():
 
     serial_work = ET.SubElement(serial_publication, 'SerialWork')
     
-    work_title = ET.SubElement(serial_work, 'Title')
-    
-    title_type = ET.SubElement(work_title, 'TitleType')
-    title_type.text = '01' # Distinctive title (05 abbreviated)
+    work_identifier = ET.SubElement(serial_work, 'WorkIdentifier')
 
-    title_type = ET.SubElement(work_title, 'TitleText')
-    title_type.text = 'ERUDITORUM ACTA 2024'
+    work_id_type = ET.SubElement(work_identifier, 'WorkIDType')
+    work_id_type.text = '08' # CODEN
 
-    # TODO: ISSN
+    id_value = ET.SubElement(work_identifier, 'IDValue')
+    id_value.text = '3034-9796' # ISSN
+
+    add_title(serial_work, 'De Cifris Koine')
+
     # TODO: Nome rivista?
 
     # Formato del prodotto: rivista stampata
@@ -87,23 +114,27 @@ def test():
 
     content_item = ET.SubElement(work, 'ContentItem')
 
-    content_title = ET.SubElement(content_item, 'Title')
-
-    content_title_type = ET.SubElement(content_title, 'TitleType')
-    content_title_type.text = '01'
-
-    content_title_text = ET.SubElement(content_title, 'TitleText')
-    content_title_text.text = 'Introduzione a De Cifris Eruditorum'
-
-
-    # TODO: language
+    add_page_ranges(content_item, '2-8')
+    add_title(content_item, 'Introduzione a De Cifris Eruditorum')
+    add_language(content_item, 'ita')
+    # add_author(content_item, '')
     # TODO: author
-    # TODO: page range, number
-    
 
+def test():
+    message = ET.Element('ONIXDOISerialArticleWorkRegistrationMessage')
+    message.attrib['xmlns'] = 'http://www.editeur.org/onix/DOIMetadata/2.0'
+    # message.attrib['xmlns'] = 'http://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd'
+    message.attrib['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
+    message.attrib['xmlns:cl'] = 'http://www.medra.org/DOIMetadata/2.0/Citations'
+    message.attrib['xsi:schemaLocation'] = 'http://www.editeur.org/onix/DOIMetadata/2.0 http://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd'
+    root = ET.ElementTree(message)
 
+    create_header(message)
+    # TODO: for each DOI do
+    append_work(message)
 
-    message_str = ET.tostring(message)
+    ET.indent(message)
+    message_str = ET.tostring(message, encoding='unicode')
     print(message_str)
     schema_root = ''
     with open('./ONIX_DOIMetadata_2.0.xsd', 'rb') as f:
