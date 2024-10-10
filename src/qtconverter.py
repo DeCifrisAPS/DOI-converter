@@ -8,7 +8,9 @@ from PyQt5.QtWidgets import QFileDialog, QApplication
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5 import QtCore
 
-from converter-site import ParserV10, read_raw_data
+from converter_site import ParserV10, read_raw_data
+
+from converter_doi import convert_to_xml, save_xml_to_file
 
 version = "10"
 
@@ -139,9 +141,16 @@ class OutputPage(QWizardPage):
 
     def validatePage(self):
         raw_data = read_raw_data(self.wizard().input_file)
-        converted = global_parser.convert_data(raw_data)
+        volume_data = global_parser.convert_data(raw_data)
         with open(self.chosen_path, "w") as ofile:
-            json.dump(converted, ofile, ensure_ascii=False)
+            json.dump(volume_data, ofile, ensure_ascii=False)
+            try:
+                filename_xml = self.chosen_path.split('.')[0] + '.xml'
+                save_xml_to_file(filename_xml, convert_to_xml(volume_data))
+            except Exception as e:
+                print("Could not create XML file")
+                print(e)
+                return False
             return True
         return False
 

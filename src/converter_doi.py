@@ -81,16 +81,6 @@ def add_author(elt, idx, author):
 
 
 def append_work(message, volume_data, article):
-    print(article)
-    # {'id': 'I01', 'title': 'Introduzione a De Cifris Eruditorum',
-    # 'language': 'ita', 'pageRange': '2-4', 'doi': '10.69091/koine/vol-3-I01',
-    # 'pdfLink':
-    # 'https://drive.google.com/file/d/1EU-3DccJU7jkyAbFza8HBSbsYtAvsuqF',
-    # 'authors': [{'name': 'Antonino', 'surname': 'Alì', 'aff
-    # iliation': 'Università di Trento'}, {'name': 'Massimiliano', 'surname':
-    # 'Sala', 'affiliation': 'Università di Trento', 'ORCID':
-    # '0000-0002-7266-5146'}]}
-
     # Begin for each DOI
     work = ET.SubElement(message, 'DOISerialArticleWork')
     notification_type = ET.SubElement(work, 'NotificationType')
@@ -140,7 +130,8 @@ def append_work(message, volume_data, article):
     date_format = ET.SubElement(journal_issue_date, 'DateFormat')
     date_format.text = '00'
     date_issue = ET.SubElement(journal_issue_date, 'Date')
-    date_issue.text = datetime.datetime.now().strftime('%Y%m%d') # FIXME
+    date_issue.text = volume_data['published']
+    # datetime.datetime.now().strftime('%Y%m%d')
 
     content_item = ET.SubElement(work, 'ContentItem')
     add_page_ranges(content_item, article['pageRange'])
@@ -152,13 +143,10 @@ def append_work(message, volume_data, article):
     # add_author(content_item, 3, 'Edoardo', 'Signorini', 'Politecnico di Torino e Telsy Spa')
     add_language(content_item, article['language'])
     publication_date = ET.SubElement(content_item, 'PublicationDate')
-    publication_date.text = datetime.datetime.now().strftime('%Y%m%d') # FIXME
+    publication_date.text = volume_data['published']
+    # datetime.datetime.now().strftime('%Y%m%d')
 
-def test():
-    volume_data = {}
-    with open('../vol3.json', 'r', encoding='utf-8') as f:
-        volume_data = json.load(f)
-
+def convert_to_xml(volume_data):
     message = ET.Element('ONIXDOISerialArticleWorkRegistrationMessage')
     message.attrib['xmlns'] = 'http://www.editeur.org/onix/DOIMetadata/2.0'
     # message.attrib['xmlns'] = 'http://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd'
@@ -171,8 +159,23 @@ def test():
     for article in volume_data['articles']:
         append_work(message, volume_data, article)
 
-    ET.indent(message)
-    message_str = ET.tostring(message, encoding='unicode')
+    return root
+
+def save_xml_to_file(filename, root):
+    with open(filename, 'w', encoding='utf-8') as f:
+        root.write(f,
+                    encoding='unicode')
+                    #default_namespace='http://www.editeur.org/onix/DOIMetadata/2.0')
+
+def test():
+    volume_data = {}
+    with open('../vol3.json', 'r', encoding='utf-8') as f:
+        volume_data = json.load(f)
+    
+    root = convert_to_xml(volume_data)
+
+    ET.indent(root)
+    message_str = ET.tostring(root.getroot(), encoding='unicode')
     print(message_str)
     schema_root = ''
     with open('./ONIX_DOIMetadata_2.0.xsd', 'rb') as f:
@@ -181,10 +184,7 @@ def test():
     parser = LET.XMLParser(schema = schema)
     _r = LET.fromstring(message_str, parser)
     # # print(ET.tostring(message, encoding='utf-8'))
-    with open('text.xml', 'w', encoding='utf-8') as f:
-        root.write(f,
-                    encoding='unicode')
-                    #default_namespace='http://www.editeur.org/onix/DOIMetadata/2.0')
+    save_xml_to_file('text.xml', root)
     # parser = LET.XMLParser(dtd_validation=True)
     # print(ET.tostring(message))
     print(_r)
