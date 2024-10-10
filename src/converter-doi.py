@@ -40,84 +40,78 @@ def add_language(elt, lang):
     language_code = ET.SubElement(language, 'LanguageCode')
     language_code.text = lang
 
-def add_page_ranges(elt, rng):
-    fst = rng.split('-')[0]
-    snd = rng.split('-')[1]
+def add_page_ranges(elt, page_range):
+    [fst, snd] = page_range.split('-')
     tot = str(int(snd) - int(fst) + 1)
     text_item = ET.SubElement(elt, 'TextItem')
 
     page_run = ET.SubElement(text_item, 'PageRun')
-    
     first_page = ET.SubElement(page_run, 'FirstPageNumber')
     first_page.text = fst
-
     last_page = ET.SubElement(page_run, 'LastPageNumber')
     last_page.text = snd
 
     number_of_pages = ET.SubElement(text_item, 'NumberOfPages')
     number_of_pages.text = tot
 
-def add_author(elt, idx, name, surname, affiliation):
+def add_author(elt, idx, author):
     contributor = ET.SubElement(elt, 'Contributor')
-
     sequence_number = ET.SubElement(contributor, 'SequenceNumber')
     sequence_number.text = str(idx)
-
     contributor_role = ET.SubElement(contributor, 'ContributorRole')
     contributor_role.text = 'A01'
-    
+    if 'ORCID' in author:
+        name_identifier = ET.SubElement(contributor, 'NameIdentifier')
+        name_id_type = ET.SubElement(name_identifier, 'NameIDType')
+        name_id_type.text = '21' # ORCID
+        orcid_value = ET.SubElement(name_identifier, 'IDValue')
+        orcid_value.text = 'https://orcid.org/' + author['ORCID']
     person_name = ET.SubElement(contributor, 'PersonName')
-    person_name.text = name + ' ' + surname
-
+    person_name.text = author['name'] + ' ' + author['surname']
     person_name_inverted = ET.SubElement(contributor, 'PersonNameInverted')
-    person_name_inverted.text = surname + ', ' + name
-
+    person_name_inverted.text = author['surname'] + ', ' + author['name']
     name_before_key = ET.SubElement(contributor, 'NamesBeforeKey')
-    name_before_key.text = name
-
+    name_before_key.text = author['name']
     key_names = ET.SubElement(contributor, 'KeyNames')
-    key_names.text = surname
+    key_names.text = author['surname']
+    if 'affiliation' in author:
+        professional_affiliation = ET.SubElement(contributor, 'ProfessionalAffiliation')
+        affiliation_tag = ET.SubElement(professional_affiliation, 'Affiliation')
+        affiliation_tag.text = author['affiliation']
 
-    professional_affiliation = ET.SubElement(contributor, 'ProfessionalAffiliation')
-    affiliation_tag = ET.SubElement(professional_affiliation, 'Affiliation')
-    affiliation_tag.text = affiliation
 
+def append_work(message, volume_data, article):
+    print(article)
+    # {'id': 'I01', 'title': 'Introduzione a De Cifris Eruditorum',
+    # 'language': 'ita', 'pageRange': '2-4', 'doi': '10.69091/koine/vol-3-I01',
+    # 'pdfLink':
+    # 'https://drive.google.com/file/d/1EU-3DccJU7jkyAbFza8HBSbsYtAvsuqF',
+    # 'authors': [{'name': 'Antonino', 'surname': 'Alì', 'aff
+    # iliation': 'Università di Trento'}, {'name': 'Massimiliano', 'surname':
+    # 'Sala', 'affiliation': 'Università di Trento', 'ORCID':
+    # '0000-0002-7266-5146'}]}
 
-def append_work(message):
     # Begin for each DOI
     work = ET.SubElement(message, 'DOISerialArticleWork')
-
     notification_type = ET.SubElement(work, 'NotificationType')
     notification_type.text = '06' # 06 creation, 07 update
-
     doi = ET.SubElement(work, 'DOI')
-    doi.text = '10.69091/koine/vol-2-T04'
-
+    doi.text = article['doi'] # '10.69091/koine/vol-2-T04'
     doi_website = ET.SubElement(work, 'DOIWebsiteLink')
-    doi_website.text = 'https://decifris.it/koine/vol2/T04'
-
+    doi_website.text = 'https://decifris.it/koine/' + volume_data['id'] + '/' + article['id']
     access_indicators = ET.SubElement(work, 'AccessIndicators')
     ET.SubElement(access_indicators, 'FreeToRead')
-
     registrant_name = ET.SubElement(work, 'RegistrantName')
     registrant_name.text = 'De Componendis Cifris APS'
-
     registration_authority = ET.SubElement(work, 'RegistrationAuthority')
     registration_authority.text = 'mEDRA'
 
     serial_publication = ET.SubElement(work, 'SerialPublication')
 
     serial_work = ET.SubElement(serial_publication, 'SerialWork')
-    
-    # work_identifier = ET.SubElement(serial_work, 'WorkIdentifier')
 
-    # work_id_type = ET.SubElement(work_identifier, 'WorkIDType')
-    # work_id_type.text = '08' # CODEN
-
-    # id_value = ET.SubElement(work_identifier, 'IDValue')
-    # id_value.text = '3034-9796' # ISSN
-
-    add_title(serial_work, 'De Cifris Koine', 'eng')
+    # De Cifris Koine
+    add_title(serial_work, volume_data['series'], article['language'])
 
     publisher = ET.SubElement(serial_work, 'Publisher')
 
@@ -135,7 +129,7 @@ def append_work(message):
     product_id_type = ET.SubElement(product_identifier, 'ProductIDType')
     product_id_type.text = '07'
     product_id_value = ET.SubElement(product_identifier, 'IDValue')
-    product_id_value.text = '3034-9796'
+    product_id_value.text = volume_data['ISSN']
     product_form = ET.SubElement(serial_version, 'ProductForm')
     product_form.text = 'JB' # Rivista stampata
 
@@ -146,19 +140,25 @@ def append_work(message):
     date_format = ET.SubElement(journal_issue_date, 'DateFormat')
     date_format.text = '00'
     date_issue = ET.SubElement(journal_issue_date, 'Date')
-    date_issue.text = datetime.datetime.now().strftime('%Y%m%d')
+    date_issue.text = datetime.datetime.now().strftime('%Y%m%d') # FIXME
 
     content_item = ET.SubElement(work, 'ContentItem')
-    add_page_ranges(content_item, '17-20')
-    add_title(content_item, 'On adapting NTRU for Post-Quantum Public-Key Encryption', 'eng')
-    add_author(content_item, 1, 'Simone', 'Dutto', 'Politecnico di Torino')
-    add_author(content_item, 2, 'Gugliemino', 'Morgani', 'Telsy Spa')
-    add_author(content_item, 3, 'Edoardo', 'Signorini', 'Politecnico di Torino e Telsy Spa')
-    add_language(content_item, 'eng')
+    add_page_ranges(content_item, article['pageRange'])
+    add_title(content_item, article['title'], article['language'])
+    for idx, author in enumerate(article['authors']):
+        add_author(content_item, idx + 1, author)
+    # add_author(content_item, 1, 'Simone', 'Dutto', 'Politecnico di Torino')
+    # add_author(content_item, 2, 'Gugliemino', 'Morgani', 'Telsy Spa')
+    # add_author(content_item, 3, 'Edoardo', 'Signorini', 'Politecnico di Torino e Telsy Spa')
+    add_language(content_item, article['language'])
     publication_date = ET.SubElement(content_item, 'PublicationDate')
-    publication_date.text = datetime.datetime.now().strftime('%Y%m%d')
+    publication_date.text = datetime.datetime.now().strftime('%Y%m%d') # FIXME
 
 def test():
+    volume_data = {}
+    with open('../vol3.json', 'r', encoding='utf-8') as f:
+        volume_data = json.load(f)
+
     message = ET.Element('ONIXDOISerialArticleWorkRegistrationMessage')
     message.attrib['xmlns'] = 'http://www.editeur.org/onix/DOIMetadata/2.0'
     # message.attrib['xmlns'] = 'http://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd'
@@ -168,8 +168,8 @@ def test():
     root = ET.ElementTree(message)
 
     create_header(message)
-    # TODO: for each DOI do
-    append_work(message)
+    for article in volume_data['articles']:
+        append_work(message, volume_data, article)
 
     ET.indent(message)
     message_str = ET.tostring(message, encoding='unicode')
@@ -188,7 +188,6 @@ def test():
     # parser = LET.XMLParser(dtd_validation=True)
     # print(ET.tostring(message))
     print(_r)
-
     print("OK")
 
 def convert_json_to_doi_data(collana: str, json_data: dict) -> (bool, [str]):
