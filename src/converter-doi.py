@@ -16,13 +16,14 @@ def create_header(message):
     from_email.text = 'editorial@decifris.it'
 
     to_company = ET.SubElement(header, 'ToCompany')
-    to_company.text = 'mEDRA'
+    to_company.text = 'mEDRA RA'
 
     sent_date = ET.SubElement(header, 'SentDate')
     sent_date.text = datetime.datetime.now().strftime('%Y%m%d%H%M')
 
-def add_title(elt, title):
+def add_title(elt, title, language):
     work_title = ET.SubElement(elt, 'Title')
+    work_title.attrib['language'] = language
 
     title_type = ET.SubElement(work_title, 'TitleType')
     title_type.text = '01' # Distinctive title (05 abbreviated)
@@ -41,32 +42,43 @@ def add_language(elt, lang):
 
 def add_page_ranges(elt, rng):
     fst = rng.split('-')[0]
-    snd = rng.split('-')[0]
-    tot = str(int(snd) - int(snd) + 1)
+    snd = rng.split('-')[1]
+    tot = str(int(snd) - int(fst) + 1)
     text_item = ET.SubElement(elt, 'TextItem')
 
     page_run = ET.SubElement(text_item, 'PageRun')
     
     first_page = ET.SubElement(page_run, 'FirstPageNumber')
-    first_page.text = rng.split('-')[0]
+    first_page.text = fst
 
     last_page = ET.SubElement(page_run, 'LastPageNumber')
-    last_page.text = rng.split('-')[1]
+    last_page.text = snd
 
     number_of_pages = ET.SubElement(text_item, 'NumberOfPages')
     number_of_pages.text = tot
 
-def add_author(elt, name, affiliation):
+def add_author(elt, idx, name, surname, affiliation):
     contributor = ET.SubElement(elt, 'Contributor')
+
+    sequence_number = ET.SubElement(contributor, 'SequenceNumber')
+    sequence_number.text = str(idx)
 
     contributor_role = ET.SubElement(contributor, 'ContributorRole')
     contributor_role.text = 'A01'
     
     person_name = ET.SubElement(contributor, 'PersonName')
-    person_name.text = name
+    person_name.text = name + ' ' + surname
+
+    person_name_inverted = ET.SubElement(contributor, 'PersonNameInverted')
+    person_name_inverted.text = surname + ', ' + name
+
+    name_before_key = ET.SubElement(contributor, 'NamesBeforeKey')
+    name_before_key.text = name
+
+    key_names = ET.SubElement(contributor, 'KeyNames')
+    key_names.text = surname
 
     professional_affiliation = ET.SubElement(contributor, 'ProfessionalAffiliation')
-    
     affiliation_tag = ET.SubElement(professional_affiliation, 'Affiliation')
     affiliation_tag.text = affiliation
 
@@ -84,6 +96,9 @@ def append_work(message):
     doi_website = ET.SubElement(work, 'DOIWebsiteLink')
     doi_website.text = 'https://decifris.it/koine/vol2/T04'
 
+    access_indicators = ET.SubElement(work, 'AccessIndicators')
+    ET.SubElement(access_indicators, 'FreeToRead')
+
     registrant_name = ET.SubElement(work, 'RegistrantName')
     registrant_name.text = 'De Componendis Cifris APS'
 
@@ -94,19 +109,15 @@ def append_work(message):
 
     serial_work = ET.SubElement(serial_publication, 'SerialWork')
     
-    work_identifier = ET.SubElement(serial_work, 'WorkIdentifier')
+    # work_identifier = ET.SubElement(serial_work, 'WorkIdentifier')
 
-    work_id_type = ET.SubElement(work_identifier, 'WorkIDType')
-    work_id_type.text = '08' # CODEN
+    # work_id_type = ET.SubElement(work_identifier, 'WorkIDType')
+    # work_id_type.text = '08' # CODEN
 
-    id_value = ET.SubElement(work_identifier, 'IDValue')
-    id_value.text = '3034-9796' # ISSN
+    # id_value = ET.SubElement(work_identifier, 'IDValue')
+    # id_value.text = '3034-9796' # ISSN
 
-    add_title(serial_work, 'De Cifris Koine')
-
-    # TODO: Nome rivista?
-
-    # Formato del prodotto: rivista stampata
+    add_title(serial_work, 'De Cifris Koine', 'eng')
 
     publisher = ET.SubElement(serial_work, 'Publisher')
 
@@ -114,29 +125,38 @@ def append_work(message):
     publisher_role.text = '01' # Publisher (02 - co-publisher) (05 abbreviated)
 
     publisher_name = ET.SubElement(publisher, 'PublisherName')
-    publisher_name.text = 'De Cifris Press'
+    publisher_name.text = 'De Componendis Cifris APS'
 
     country_of_publication = ET.SubElement(serial_work, 'CountryOfPublication')
     country_of_publication.text = 'IT'
 
-    journal_issue = ET.SubElement(work, 'JournalIssue')
+    serial_version = ET.SubElement(serial_publication, 'SerialVersion')
+    product_identifier = ET.SubElement(serial_version, 'ProductIdentifier')
+    product_id_type = ET.SubElement(product_identifier, 'ProductIDType')
+    product_id_type.text = '07'
+    product_id_value = ET.SubElement(product_identifier, 'IDValue')
+    product_id_value.text = '3034-9796'
+    product_form = ET.SubElement(serial_version, 'ProductForm')
+    product_form.text = 'JB' # Rivista stampata
 
+    journal_issue = ET.SubElement(work, 'JournalIssue')
     issue_number = ET.SubElement(journal_issue, 'JournalIssueNumber')
     issue_number.text = '2'
-
-    # TODO: Journal Issue Designation?
-    # TODO: Journal Issue Date?
+    journal_issue_date = ET.SubElement(journal_issue, 'JournalIssueDate')
+    date_format = ET.SubElement(journal_issue_date, 'DateFormat')
+    date_format.text = '00'
+    date_issue = ET.SubElement(journal_issue_date, 'Date')
+    date_issue.text = datetime.datetime.now().strftime('%Y%m%d')
 
     content_item = ET.SubElement(work, 'ContentItem')
-
     add_page_ranges(content_item, '17-20')
-    add_title(content_item, 'On adapting NTRU for Post-Quantum Public-Key Encryption')
-    add_author(content_item, 'Simone Dutto', 'Politecnico di Torino')
-    add_author(content_item, 'Gugliemino Morgani', 'Telsy Spa')
-    add_author(content_item, 'Edoardo Signorini', 'Politecnico di Torino e Telsy Spa')
+    add_title(content_item, 'On adapting NTRU for Post-Quantum Public-Key Encryption', 'eng')
+    add_author(content_item, 1, 'Simone', 'Dutto', 'Politecnico di Torino')
+    add_author(content_item, 2, 'Gugliemino', 'Morgani', 'Telsy Spa')
+    add_author(content_item, 3, 'Edoardo', 'Signorini', 'Politecnico di Torino e Telsy Spa')
     add_language(content_item, 'eng')
-    # add_author(content_item, '')
-    # TODO: author
+    publication_date = ET.SubElement(content_item, 'PublicationDate')
+    publication_date.text = datetime.datetime.now().strftime('%Y%m%d')
 
 def test():
     message = ET.Element('ONIXDOISerialArticleWorkRegistrationMessage')
