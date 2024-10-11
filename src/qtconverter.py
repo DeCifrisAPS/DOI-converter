@@ -44,7 +44,10 @@ class InputPage(QWizardPage):
         self.setLayout(layout)
 
     def initializePage(self):
-        self.label1.setText("Questo programma serve per convertire...")
+        self.label1.setText("Questo programma serve a convertire"
+            + " una tabella CSV (o TSV)"
+            + " nel formato JSON per la generazione delle pagine sul sito"
+            + " e nel formato XML (ONIX) per la generazione dei DOI.")
         self.label1.setWordWrap(True)
 
 class ValidationPage(QWizardPage):
@@ -104,7 +107,10 @@ class OutputPage(QWizardPage):
         self.chosen_path = None
         self.pathChanged.connect(self.completeChanged)
         self.setTitle("Selezionare file da generare")
-        self.setSubTitle("Verrà creato o sovrascritto")
+        self.setSubTitle("Verranno creati o sovrascritti i file JSON e XML."
+                        + " Selezionare il file JSON."
+                        + " Il file XML verrà creato con lo stesso nome,"
+                        + " ma estensione diversa.")
         self.file_label = QLabel()
         self.selectFileButton = QPushButton("Browse")
         self.selectFileButton.clicked.connect(self.chooseFile)
@@ -114,7 +120,7 @@ class OutputPage(QWizardPage):
         self.setLayout(gl)
 
     def initializePage(self):
-        self.file_label.setText("Select a file")
+        self.file_label.setText("Selezionare un file JSON")
 
     def chooseFile(self):
         path = QFileDialog.getSaveFileName(self,
