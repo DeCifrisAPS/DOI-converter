@@ -12,6 +12,14 @@ from converter_site import ParserV10, read_raw_data
 
 from converter_doi import convert_to_xml, save_xml_to_file
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 version = "10"
 
 global_parser = ParserV10()
@@ -26,7 +34,7 @@ class ConverterWizard(QWizard):
         self.addPage(FinishPage(self))
 
         self.setPixmap(QWizard.LogoPixmap, # Classic or Modern
-                QPixmap("./decifris_logo.jpg"))
+                QPixmap(resource_path("./decifris_logo.jpg")))
         self.setWizardStyle(QWizard.ModernStyle)
         # ClassicStyle ModernStyle MacStyle AeroStyle
 
@@ -173,6 +181,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     wiz = ConverterWizard()
     wiz.show()
-    wiz.setWindowIcon(QIcon("./logo.png"))
+    wiz.setWindowIcon(QIcon(resource_path("decifris_logo.jpg")))
     sys.exit(app.exec())
 
