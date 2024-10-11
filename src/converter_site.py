@@ -91,7 +91,7 @@ class ParserV10():
             partial_article['note'] = note
         keywords = keywords.strip()
         if bool(keywords):
-            partial_article['keywords'] = keywords
+            partial_article['keywords'] = keywords.split(', ')
         pdf_revised = pdf_revised.strip()
         if bool(pdf_revised):
             partial_article['pdfRevisedLink'] = pdf_revised

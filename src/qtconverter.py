@@ -156,7 +156,7 @@ class OutputPage(QWizardPage):
     def validatePage(self):
         raw_data = read_raw_data(self.wizard().input_file)
         volume_data = global_parser.convert_data(raw_data)
-        with open(self.chosen_path, "w") as ofile:
+        with open(self.chosen_path, "w", encoding="utf-8") as ofile:
             json.dump(volume_data, ofile, ensure_ascii=False)
             try:
                 filename_xml = self.chosen_path.split('.')[0] + '.xml'
