@@ -88,7 +88,7 @@ def append_work(message, volume_data, article):
     doi = ET.SubElement(work, 'DOI')
     doi.text = article['doi'] # '10.69091/koine/vol-2-T04'
     doi_website = ET.SubElement(work, 'DOIWebsiteLink')
-    doi_website.text = 'https://decifris.it/koine/' + volume_data['id'] + '/' + article['id']
+    doi_website.text = 'https://www.decifris.it/koine/' + volume_data['id'] + '/' + article['id']
     access_indicators = ET.SubElement(work, 'AccessIndicators')
     ET.SubElement(access_indicators, 'FreeToRead')
     registrant_name = ET.SubElement(work, 'RegistrantName')
