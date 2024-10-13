@@ -109,7 +109,7 @@ def append_work(message, volume_data, article):
     publisher_role.text = '01' # Publisher (02 - co-publisher) (05 abbreviated)
 
     publisher_name = ET.SubElement(publisher, 'PublisherName')
-    publisher_name.text = 'De Componendis Cifris APS'
+    publisher_name.text = volume_data['publisher'] #'De Componendis Cifris APS'
 
     country_of_publication = ET.SubElement(serial_work, 'CountryOfPublication')
     country_of_publication.text = 'IT'
