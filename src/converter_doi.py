@@ -80,11 +80,13 @@ def add_author(elt, idx, author):
         affiliation_tag.text = author['affiliation']
 
 
-def append_work(message, volume_data, article):
+def append_work(message, volume_data, article, update=False):
     # Begin for each DOI
     work = ET.SubElement(message, 'DOISerialArticleWork')
     notification_type = ET.SubElement(work, 'NotificationType')
     notification_type.text = '06' # 06 creation, 07 update
+    if update:
+        notification_type.text = '07'
     doi = ET.SubElement(work, 'DOI')
     doi.text = article['doi'] # '10.69091/koine/vol-2-T04'
     doi_website = ET.SubElement(work, 'DOIWebsiteLink')
@@ -109,7 +111,7 @@ def append_work(message, volume_data, article):
     publisher_role.text = '01' # Publisher (02 - co-publisher) (05 abbreviated)
 
     publisher_name = ET.SubElement(publisher, 'PublisherName')
-    publisher_name.text = volume_data['publisher'] #'De Componendis Cifris APS'
+    publisher_name.text = volume_data['publisher'] #'De Cifris Press'
 
     country_of_publication = ET.SubElement(serial_work, 'CountryOfPublication')
     country_of_publication.text = 'IT'
@@ -125,7 +127,7 @@ def append_work(message, volume_data, article):
 
     journal_issue = ET.SubElement(work, 'JournalIssue')
     issue_number = ET.SubElement(journal_issue, 'JournalIssueNumber')
-    issue_number.text = '2'
+    issue_number.text = volume_data['id'][3:] # 'vol2' => '2'
     journal_issue_date = ET.SubElement(journal_issue, 'JournalIssueDate')
     date_format = ET.SubElement(journal_issue_date, 'DateFormat')
     date_format.text = '00'
@@ -146,7 +148,7 @@ def append_work(message, volume_data, article):
     publication_date.text = volume_data['published']
     # datetime.datetime.now().strftime('%Y%m%d')
 
-def convert_to_xml(volume_data):
+def convert_to_xml(volume_data, update=False):
     message = ET.Element('ONIXDOISerialArticleWorkRegistrationMessage')
     message.attrib['xmlns'] = 'http://www.editeur.org/onix/DOIMetadata/2.0'
     # message.attrib['xmlns'] = 'http://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd'
@@ -157,7 +159,7 @@ def convert_to_xml(volume_data):
 
     create_header(message)
     for article in volume_data['articles']:
-        append_work(message, volume_data, article)
+        append_work(message, volume_data, article, update)
 
     return root
 
