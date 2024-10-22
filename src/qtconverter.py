@@ -3,7 +3,7 @@ import os
 import sys
 import json
 from PyQt5.QtWidgets import QWizard, QWizardPage
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QPushButton, QGridLayout
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QPushButton, QGridLayout, QCheckBox
 from PyQt5.QtWidgets import QFileDialog, QApplication
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5 import QtCore
@@ -68,7 +68,7 @@ class ValidationPage(QWizardPage):
         self.setTitle("Selezionare file da convertire")
         self.setSubTitle("Verrà anche validato il file prima di continuare")
         self.file_label = QLabel()
-        self.selectFileButton = QPushButton("Browse")
+        self.selectFileButton = QPushButton("Scegli")
         # self.selectFileButton.setIcon(QIcon("./logo.png"))
         self.selectFileButton.clicked.connect(self.chooseFile)
         self.message_label = QLabel()
@@ -120,11 +120,14 @@ class OutputPage(QWizardPage):
                         + " Il file XML verrà creato con lo stesso nome,"
                         + " ma estensione diversa.")
         self.file_label = QLabel()
-        self.selectFileButton = QPushButton("Browse")
+        self.selectFileButton = QPushButton("Scegli")
         self.selectFileButton.clicked.connect(self.chooseFile)
+        self.shouldUpdateCheck = QCheckBox('Il messaggio XML è una richiesta'
+                + ' di aggiornamento', self)
         gl = QGridLayout()
         gl.addWidget(self.file_label, 0, 0)
         gl.addWidget(self.selectFileButton, 0, 1)
+        gl.addWidget(self.shouldUpdateCheck, 1, 0)
         self.setLayout(gl)
 
     def initializePage(self):
@@ -160,7 +163,9 @@ class OutputPage(QWizardPage):
             json.dump(volume_data, ofile, ensure_ascii=False)
             try:
                 filename_xml = self.chosen_path.split('.')[0] + '.xml'
-                save_xml_to_file(filename_xml, convert_to_xml(volume_data))
+                save_xml_to_file(filename_xml,
+                        convert_to_xml(volume_data,
+                            self.shouldUpdateCheck.isChecked()))
             except Exception as e:
                 print("Could not create XML file")
                 print(e)
